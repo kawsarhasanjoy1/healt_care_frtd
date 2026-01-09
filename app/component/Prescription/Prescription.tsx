@@ -1,0 +1,139 @@
+import React from "react";
+import { FiCalendar, FiUser, FiMapPin, FiPhone } from "react-icons/fi";
+import { LuStethoscope } from "react-icons/lu";
+
+const PrescriptionView = ({ data }: { data: any }) => {
+  const { doctor, patient, instructions, followUpDate, createdAt } = data;
+  console.log(data);
+   const dateOfBirth= new Date(patient?.patientHealthData?.dateOfBirth)
+   const year = dateOfBirth.getFullYear()
+   const age = ( new Date().getFullYear() - year)
+  return (
+    <div className="md:max-w-5xl w-3xl md: w-full mx-auto my-10 bg-white shadow-2xl border border-slate-200 min-h-[1100px] flex flex-col md:p-10 px-3 py-10 font-sans relative overflow-x-auto">
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+        <LuStethoscope size={500} />
+      </div>
+      <div className="flex justify-between items-start border-b-4 border-indigo-600 pb-6 mb-8 relative z-10">
+        <div>
+          <h1 className="text-3xl font-bold text-indigo-900">{doctor?.name}</h1>
+          <p className="text-md font-semibold text-slate-700">
+            {doctor?.qualification}
+          </p>
+          <p className="text-sm text-slate-500">{doctor?.designation}</p>
+          <p className="text-sm text-slate-500">
+            {doctor?.currentWorkingPlace}
+          </p>
+        </div>
+        <div className="text-right">
+          <h2 className="text-xl font-bold text-indigo-600">
+            HealthCare Center
+          </h2>
+          <p className="flex items-center justify-end gap-2 text-sm text-slate-500 mt-1">
+            <FiMapPin /> {doctor?.address || "Dhaka, Bangladesh"}
+          </p>
+          <p className="flex items-center justify-end gap-2 text-sm text-slate-500">
+            <FiPhone /> {doctor?.contactNumber}
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-slate-100 p-4 rounded-lg grid grid-cols-5 md:grid-cols-5 gap-4 mb-8 relative z-10">
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+            Patient Name
+          </span>
+          <span className="text-sm font-bold text-slate-800">
+            {patient?.name}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+            Date
+          </span>
+          <span className="text-sm font-bold text-slate-800">
+            {new Date(createdAt).toLocaleDateString()}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+            Gender
+          </span>
+          <span className="text-sm font-bold text-slate-800">
+            {patient?.patientHealthData?.gender || "N/A"}
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+           Age
+          </span>
+          <span className="text-sm font-bold text-slate-800">
+            {age || "N/A"}
+          </span>
+        </div>
+        <div className="flex flex-col text-right">
+          <span className="text-[10px] uppercase font-bold text-slate-400">
+            Prescription ID
+          </span>
+          <span className="text-sm font-mono font-bold text-slate-800">
+            #PX-{data.id.slice(0, 8)}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex-1 flex gap-10 relative z-10">
+        <div className="w-1/4 border-r border-slate-200 pr-4">
+          <h4 className="font-bold text-slate-800 border-b mb-2 pb-1 uppercase text-xs">
+            Symptoms
+          </h4>
+          <p className="text-sm text-slate-500 italic">
+            As per consultation...
+          </p>
+        </div>
+
+        <div className="w-3/4">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="text-4xl font-serif italic font-bold text-indigo-600 leading-none">
+              Rx
+            </span>
+            <div className="h-[2px] bg-slate-200 flex-1"></div>
+          </div>
+
+          <div
+            className="prose prose-slate max-w-none min-h-[400px] text-slate-700 
+            prose-headings:text-indigo-800 prose-li:marker:text-indigo-500"
+            dangerouslySetInnerHTML={{ __html: instructions }}
+          />
+
+          {followUpDate && (
+            <div className="mt-10 p-4 border-2 border-dashed border-indigo-100 rounded-xl inline-block bg-indigo-50">
+              <p className="text-sm font-bold text-indigo-700 flex items-center gap-2">
+                <FiCalendar /> Next Follow-up:{" "}
+                {new Date(followUpDate).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="mt-20 border-t border-slate-200 pt-10 flex justify-between items-end relative z-10">
+        <div className="text-[10px] text-slate-400">
+          <p>
+            Generated by <strong>DoctorCare Portal</strong>
+          </p>
+          <p>
+            This is a computer-generated prescription and doesn't require a
+            physical signature.
+          </p>
+        </div>
+        <div className="text-center w-48">
+          <div className="border-b border-slate-400 mb-2"></div>
+          <p className="text-xs font-bold text-slate-700">
+            Doctor's Digital Signature
+          </p>
+          <p className="text-[10px] text-slate-500 uppercase">{doctor?.name}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PrescriptionView;
