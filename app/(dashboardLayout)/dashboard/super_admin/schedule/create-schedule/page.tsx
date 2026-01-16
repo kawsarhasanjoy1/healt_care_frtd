@@ -3,7 +3,6 @@ import HCDatePicker from "@/app/component/Form/DatePicker/DatePicker";
 import HCForm from "@/app/component/Form/HCForm/HCForm";
 import HCTimeInput from "@/app/component/Form/TimePicker/TimePicker";
 import { useCreateScheduleMutation } from "@/app/redux/api/scheduleApi";
-import { dateFormatter } from "@/app/utils/dateFormater";
 import dayjs from "dayjs";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -12,22 +11,25 @@ import { FiArrowLeft } from "react-icons/fi";
 const CreateSchedule = () => {
   const [CreateSchedule, { isLoading }] = useCreateScheduleMutation();
   const handleCreate = async (values: any) => {
-    const formData = {
-      ...values,
-      startDate: dateFormatter(values.startDate),
-      endDate: dateFormatter(values.endDate),
+    const formattedData = {
+      startDate: dayjs(values.startDate).format("YYYY-MM-DD"),
+      endDate: dayjs(values.endDate).format("YYYY-MM-DD"),
+      startTime: dayjs(values.startTime).isValid()
+        ? dayjs(values.startTime).format("HH:mm")
+        : values.startTime,
+      endTime: dayjs(values.endTime).isValid()
+        ? dayjs(values.endTime).format("HH:mm")
+        : values.endTime,
     };
-
     try {
-      const res = (await CreateSchedule(formData).unwrap()) as any;
+      const res = await CreateSchedule(formattedData).unwrap();
       if (res?.success) {
-        toast.success(res?.message);
+        toast.success("শিডিউল সফলভাবে তৈরি হয়েছে!");
       }
     } catch (err: any) {
-      toast.error(err?.data?.message || "Something went wrong");
+      toast.error(err?.data?.message || "বুকিং করতে সমস্যা হয়েছে");
     }
   };
-
   return (
     <main className="min-h-[calc(100vh-64px)] bg-slate-50 p-4 md:p-6">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

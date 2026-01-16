@@ -10,7 +10,7 @@ const DetailsHeaders = ({ doctorData }: { doctorData: any }) => {
           {/* Doctor Image */}
           <div className="relative w-full md:w-64 h-64 flex-shrink-0">
             <Image
-              src={doctorData?.profilePhoto || ""}
+              src={doctorData?.profilePhoto || "https://i.pinimg.com/736x/41/2d/e5/412de548542a9d1cff0f2dfcdc21fdaf.jpg"}
               alt={doctorData?.name}
               fill
               className="rounded-2xl object-cover shadow-lg border-4 border-white"

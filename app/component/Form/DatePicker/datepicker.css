@@ -1,0 +1,61 @@
+/* datepicker.css */
+
+/* .m ক্লাসটি আমরা DatePicker-এ calendarClassName হিসেবে দিয়েছি */
+.m.react-datepicker {
+  border: none !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 16px !important;
+  font-family: inherit !important;
+  padding: 8px !important;
+}
+
+.m .react-datepicker__header {
+  background-color: white !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+  padding-top: 12px !important;
+}
+
+.m .react-datepicker__day-name {
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+  width: 2.5rem !important;
+}
+
+.m .react-datepicker__day {
+  width: 2.5rem !important;
+  line-height: 2.5rem !important;
+  border-radius: 10px !important;
+  color: #334155 !important;
+  transition: all 0.2s !important;
+}
+
+.m .react-datepicker__day:hover {
+  background-color: #f1f5f9 !important;
+  color: #6366f1 !important;
+}
+
+.m .react-datepicker__day--selected, 
+.m .react-datepicker__day--keyboard-selected {
+  background-color: #6366f1 !important;
+  color: white !important;
+  font-weight: bold !important;
+  box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4) !important;
+}
+
+.m .react-datepicker__day--today {
+  font-weight: bold !important;
+  color: black !important;
+  border: 1px solid #e0e7ff !important;
+}
+
+/* ড্রপডাউন সিলেকশন ডিজাইন (মাস ও বছর) */
+.m .react-datepicker__month-select,
+.m .react-datepicker__year-select {
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  outline: none;
+  background-color: #f8fafc;
+}

@@ -33,7 +33,7 @@ const DoctorsSwiperCard = ({ doctors }: Props) => {
               {/* Image */}
               <div className="relative w-[300px] h-[200px] rounded-lg overflow-hidden">
                 <Image
-                  src={doctor?.profilePhoto || "/doctor-placeholder.png"}
+                  src={doctor?.profilePhoto || "https://i.pinimg.com/736x/41/2d/e5/412de548542a9d1cff0f2dfcdc21fdaf.jpg"}
                   alt={doctor?.name || "Doctor"}
                   fill
                   className="object-cover"

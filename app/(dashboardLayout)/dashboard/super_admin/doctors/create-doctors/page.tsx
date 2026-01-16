@@ -21,6 +21,7 @@ import {
 } from "react-icons/fi";
 import { useCreateDoctorsMutation } from "@/app/redux/api/doctorsApi";
 import HCSelect from "@/app/component/Form/HCInput/HCSelect";
+import HCButton from "@/app/component/ui/Button/HCButton";
 
 const defaultDoctorValue = {
   name: "",
@@ -216,7 +217,7 @@ const CreateDoctor = () => {
                 Cancel
               </button>
 
-           
+              <HCButton children={"Create"} isLoading={isLoading} disabled={isLoading} type="submit" variant="primary"/>
             </div>
           </HCForm>
         </div>

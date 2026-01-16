@@ -2,29 +2,25 @@
 
 import HCForm from "@/app/component/Form/HCForm/HCForm";
 import HCInput from "@/app/component/Form/HCInput/HCIput";
-import HCMultiSelect, {
-  Option,
-} from "@/app/component/Form/HCInput/HCMultiSelect";
-import HCImageUploader from "@/app/component/Form/HCInput/HCUpload";
+import HCMultiSelect from "@/app/component/Form/HCInput/HCMultiSelect";
 import ReusableModal from "@/app/component/Reusible/Model/ReusibleModel";
 import { useUpDoctorsMutation } from "@/app/redux/api/doctorsApi";
 import { FieldValues } from "react-hook-form";
 import toast from "react-hot-toast";
-
 const UpdateDoctor = ({ specialties, setEditOpen, editOpen, doctor }: any) => {
   const [UpDoctors] = useUpDoctorsMutation();
 
-  const lockedOptions: Option[] =
+  const lockedOptions: any[] =
     doctor?.doctorSpecialties
       ?.map((ds: any) => ({
         label: ds?.specialties?.title ?? ds?.title ?? "",
         value: ds?.specialtiesId ?? ds?.specialties?.id,
       }))
-      .filter((o: Option) => o.value && o.label) ?? [];
+      .filter((o: any) => o.value && o.label) ?? [];
 
   const lockedIds = lockedOptions.map((o) => o.value);
 
-  const allOptions: Option[] =
+  const allOptions: any[] =
     specialties?.map((item: any) => ({
       label: item?.title,
       value: item?.id,
@@ -48,7 +44,6 @@ const UpdateDoctor = ({ specialties, setEditOpen, editOpen, doctor }: any) => {
         ...values,
         specialties: newSpecialtiesIds,
       };
-
 
       const res = await UpDoctors({ id: doctor?.id, values: payload }).unwrap();
       console.log(res);

@@ -1,5 +1,5 @@
-"use client";
-
+import getDoctorsData from "@/app/hooks/doctors";
+import getPatiantData from "@/app/hooks/patiant";
 import {
   FiVideo,
   FiActivity,
@@ -10,126 +10,105 @@ import {
   FiStar,
   FiDownload,
 } from "react-icons/fi";
+import ServiceCard from "./Component/DocInfo/ServiceCard";
+import StatCard from "./Component/DocInfo/StatCard";
 
-const DocInfo = () => {
+const DocInfo = async () => {
+  const doctorsData = await getDoctorsData();
+  const patiantData = await getPatiantData();
+  const doctorTotal = doctorsData?.data?.meta?.total;
+  const patiantTotal = patiantData?.data?.meta?.total;
+
   return (
-    <section className=" space-y-10">
-      <div>
-        <div className="grid gap-6 md:grid-cols-4">
+    <section className="py-16 space-y-16">
+      {/* সার্ভিস সেকশন */}
+      <div className="relative">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <ServiceCard
-            title="Live Video Consultation"
-            desc="Get instant video consultation or schedule your appointment"
-            icon={<FiVideo />}
+            title="সরাসরি ভিডিও পরামর্শ"
+            desc="তাৎক্ষণিক ভিডিও পরামর্শ নিন অথবা আপনার সুবিধামতো অ্যাপয়েন্টমেন্ট বুক করুন"
+            icon={<FiVideo className="text-2xl" />}
             accent="blue"
           />
           <ServiceCard
-            title="Diagnostic Tests"
-            desc="Book tests and get reports with reliable diagnostics"
-            icon={<FiActivity />}
+            title="ডায়াগনস্টিক টেস্ট"
+            desc="নির্ভরযোগ্য ডায়াগনস্টিক সেন্টারে টেস্ট বুক করুন এবং রিপোর্ট সংগ্রহ করুন"
+            icon={<FiActivity className="text-2xl" />}
             accent="amber"
           />
           <ServiceCard
-            title="Corporate Healthcare"
-            desc="Complete health & wellbeing solutions for employees and families"
-            icon={<FiBriefcase />}
+            title="কর্পোরেট হেলথ-কেয়ার"
+            desc="চাকরিজীবী এবং তাদের পরিবারের জন্য সম্পূর্ণ স্বাস্থ্যসেবা সমাধান"
+            icon={<FiBriefcase className="text-2xl" />}
             accent="indigo"
           />
           <ServiceCard
-            title="Healthcare IT Services"
-            desc="Our expert engineers can help build your health-tech solutions"
-            icon={<FiSettings />}
+            title="হেলথ-টেক সলিউশন"
+            desc="আমাদের দক্ষ ইঞ্জিনিয়াররা আপনার হেলথ-টেক প্রজেক্ট তৈরিতে সাহায্য করবে"
+            icon={<FiSettings className="text-2xl" />}
             accent="slate"
           />
         </div>
       </div>
 
-      {/* Stats strip */}
-      <div className="mx-auto px-5 py-10 bg-blue-100 opacity-90 rounded-2xl">
-        <div className="grid gap-8 md:grid-cols-5">
-          <StatItem
-            icon={<FiUsers />}
-            value="1700+"
-            label="BMDC verified doctors"
+      {/* স্ট্যাটাস স্ট্রিপ - আধুনিক ও মিনিমালিস্ট ডিজাইন */}
+      <div className="relative mt-12 rounded-[32px] bg-white border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-8 md:p-12">
+        <div className="relative z-10 grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-center">
+          <StatCard
+            icon={
+              <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+                <FiUsers size={24} />
+              </div>
+            }
+            value={doctorTotal || "২০০কে+"}
+            label="BMDC ভেরিফাইড অভিজ্ঞ ডাক্তার"
           />
-          <StatItem
-            icon={<FiClock />}
-            value="10 Minutes"
-            label="Average waiting time"
+
+          <StatCard
+            icon={
+              <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+                <FiClock size={24} />
+              </div>
+            }
+            value="১০ মিনিট"
+            label="গড় অপেক্ষার সময়"
           />
-          <StatItem
-            icon={<FiUsers />}
-            value="700K+"
-            label="People have trusted us with their health"
+
+          <StatCard
+            icon={
+              <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+                <FiUsers size={24} />
+              </div>
+            }
+            value={patiantTotal || "৭০০কে+"}
+            label="মানুষের আস্থা ও ভালোবাসা"
           />
-          <StatItem
-            icon={<FiStar />}
-            value="95%"
-            label="Users gave 5 star rating"
+
+          <StatCard
+            icon={
+              <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+                <FiStar size={24} />
+              </div>
+            }
+            value="৯৫%"
+            label="ইউজারদের ৫-স্টার রেটিং"
           />
-          <StatItem
-            icon={<FiDownload />}
-            value="1+ Million"
-            label="App download on Playstore"
+
+          <StatCard
+            icon={
+              <div className="p-3 rounded-2xl bg-rose-50 text-rose-600">
+                <FiDownload size={24} />
+              </div>
+            }
+            value="১+ মিলিয়ন"
+            label="প্লে-স্টোর ডাউনলোড"
           />
         </div>
+
+        {/* ডেকোরেটিভ এলিমেন্ট - হালকা গ্লো */}
+        <div className="absolute -top-10 -right-10 h-40 w-40 bg-blue-50 rounded-full blur-3xl opacity-50" />
       </div>
     </section>
-  );
-};
-
-const ServiceCard = ({
-  title,
-  desc,
-  icon,
-  accent,
-}: {
-  title: string;
-  desc: string;
-  icon: React.ReactNode;
-  accent: "blue" | "amber" | "indigo" | "slate";
-}) => {
-  const accentMap: Record<typeof accent, string> = {
-    blue: "text-blue-600 bg-blue-50 border-blue-100",
-    amber: "text-amber-600 bg-amber-50 border-amber-100",
-    indigo: "text-indigo-600 bg-indigo-50 border-indigo-100",
-    slate: "text-slate-700 bg-slate-50 border-slate-200",
-  };
-
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md">
-      <div className="flex items-start justify-between gap-4">
-        <div
-          className={`grid h-12 w-12 place-items-center rounded-2xl border ${accentMap[accent]} text-xl`}
-        >
-          {icon}
-        </div>
-
-        <div className="h-12 w-12 rounded-2xl bg-slate-100" />
-      </div>
-
-      <h3 className="mt-5 text-lg font-extrabold text-slate-900">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-slate-500">{desc}</p>
-    </div>
-  );
-};
-
-const StatItem = ({
-  icon,
-  value,
-  label,
-}: {
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) => {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-2xl text-blue-700 shadow-sm ring-1 ring-slate-200">
-        {icon}
-      </div>
-      <div className="mt-4 text-2xl font-extrabold text-slate-900">{value}</div>
-      <div className="mt-2 text-sm leading-6 text-slate-600">{label}</div>
-    </div>
   );
 };
 

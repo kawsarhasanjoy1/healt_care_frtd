@@ -1,6 +1,6 @@
 "use client";
 
-import { FiCalendar, FiFileText, FiStar, FiClock } from "react-icons/fi";
+import { FiCalendar, FiFileText, FiStar, FiClock, FiActivity } from "react-icons/fi";
 import { useGetMetaDataQuery } from "@/app/redux/api/metaApi";
 import MetaStatsCard from "@/app/component/stats/MetaStatsCard";
 import Loading from "@/app/loading/page";
@@ -12,21 +12,22 @@ const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 const PatientDashboard = () => {
   const { data: statsData, isLoading } = useGetMetaDataQuery(undefined);
   const stats = statsData?.data;
+
   const statCards = [
     {
-      label: "Total Appointments",
+      label: "মোট অ্যাপয়েন্টমেন্ট",
       value: stats?.appointmentCount || 0,
       icon: <FiCalendar />,
       color: "bg-indigo-50 text-indigo-600",
     },
     {
-      label: "Prescriptions",
+      label: "প্রেসক্রিপশন",
       value: stats?.prescriptionCount || 0,
       icon: <FiFileText />,
       color: "bg-emerald-50 text-emerald-600",
     },
     {
-      label: "Reviews Given",
+      label: "দেওয়া রিভিউ",
       value: stats?.reviewCount || 0,
       icon: <FiStar />,
       color: "bg-amber-50 text-amber-600",
@@ -36,14 +37,14 @@ const PatientDashboard = () => {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
+    <div className="p-6 bg-[#F8FAFC] min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-2xl font-extrabold text-slate-900">
-            Patient Dashboard
+        <header className="mb-10">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+            পেশেন্ট ড্যাশবোর্ড
           </h1>
-          <p className="text-slate-500">
-            Welcome back! Here is an overview of your health activities.
+          <p className="text-slate-500 font-medium mt-1">
+            স্বাগতম! আপনার স্বাস্থ্য সংক্রান্ত সকল তথ্য এখানে দেখুন।
           </p>
         </header>
 
@@ -55,20 +56,30 @@ const PatientDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Pie Chart: Appointment Status Distribution */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <FiClock className="text-indigo-500" /> Appointment Status
-            </h3>
+          {/* Pie Chart Card */}
+          <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-8">
+               <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                <div className="p-2 bg-indigo-50 rounded-lg">
+                  <FiClock className="text-indigo-600" />
+                </div>
+                অ্যাপয়েন্টমেন্ট স্ট্যাটাস
+              </h3>
+            </div>
             <PioChart stats={stats} COLORS={COLORS} />
           </div>
 
-          {/* Bar Chart: Activity Visual */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800 mb-6">
-              Activity Summary
-            </h3>
-            <BarChart stats={stats}/>
+          {/* Bar Chart Card */}
+          <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-8">
+               <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                  <FiActivity className="text-emerald-600" />
+                </div>
+                অ্যাক্টিভিটি সামারি
+              </h3>
+            </div>
+            <BarChart stats={stats} />
           </div>
         </div>
       </div>

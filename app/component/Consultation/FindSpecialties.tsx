@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const FindSpecialties = async () => {
   const res = await fetch(
-    `http://localhost:4000/api/v1/specialties?limit=${12}&page=${1}`
+    `https://healthcareserver-two.vercel.app/api/v1/specialties?limit=${12}&page=${1}`
   );
   const data = await res.json();
   const specialties = data?.data?.data;
@@ -19,7 +19,7 @@ const FindSpecialties = async () => {
           </button>
         </Link>
       </div>
-      <div className=" grid grid-cols-2 md:grid-cols-6 justify-items-center md:justify-items-start  gap-5  md:gap-16">
+      <div className=" grid grid-cols-1 md:grid-cols-4 justify-items-center md:justify-items-start  gap-5  md:gap-16">
         {specialties?.map((item: TSpecialties) => (
           <SpecialtiesCard key={item?.id} specialties={item} />
         ))}

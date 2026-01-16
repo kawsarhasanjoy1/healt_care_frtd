@@ -2,7 +2,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import PopulerDoctorsSwiper from "./PopulerDoctorsSpecialtiesSwiper";
 
 const PopulerDoctorsSpecialties = async () => {
-  const res = await fetch("http://localhost:4000/api/v1/doctors", {
+  const res = await fetch("https://healthcareserver-two.vercel.app/api/v1/doctors", {
     next: { revalidate: 30 },
   });
 

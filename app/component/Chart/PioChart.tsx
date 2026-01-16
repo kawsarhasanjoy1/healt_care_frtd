@@ -1,39 +1,51 @@
-
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
-const PioChart = ({ stats, COLORS }: { stats: any; COLORS: any }) => {
-  console.log(stats,COLORS)
+const PioChart = ({ stats, COLORS }: { stats: any; COLORS: string[] }) => {
+  const chartData = stats?.formattedAppointmentStatusDistribution?.length > 0 
+    ? stats.formattedAppointmentStatusDistribution 
+    : [{ status: "No Data", count: 1 }]; 
+
+  const isNoData = !stats?.formattedAppointmentStatusDistribution?.length;
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={stats?.formattedAppointmentStatusDistribution || []}
+            data={chartData}
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={80}
+            innerRadius={65}
+            outerRadius={85}
             paddingAngle={5}
             dataKey="count"
             nameKey="status"
+            animationDuration={1500}
           >
-            {stats?.formattedAppointmentStatusDistribution?.map(
-              (entry: any, index: number) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS?.length]}
-                />
-              )
-            )}
+            {chartData.map((entry: any, index: number) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={isNoData ? "#e2e8f0" : COLORS[index % COLORS.length]}
+                stroke="none"
+              />
+            ))}
           </Pie>
-          <Tooltip
-            contentStyle={{
-              borderRadius: "12px",
-              border: "none",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-            }}
+          {!isNoData && (
+            <Tooltip
+              contentStyle={{
+                borderRadius: "12px",
+                border: "none",
+                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                padding: "10px",
+              }}
+            />
+          )}
+          <Legend 
+            verticalAlign="bottom" 
+            height={36} 
+            iconType="circle"
+            formatter={(value) => <span className="text-slate-600 font-medium text-sm">{value}</span>}
           />
-          <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>
     </div>

@@ -7,6 +7,7 @@ import {
   PieChart, Pie, Cell, Legend 
 } from "recharts";
 import dayjs from "dayjs";
+import Loading from "@/app/loading/page";
 
 const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444"];
 
@@ -28,7 +29,7 @@ const SuperAdminDashboard = () => {
     { label: "Payments", value: stats?.paymentCount || 0, icon: <FiDollarSign />, color: "bg-rose-50 text-rose-600" },
   ];
 
-  if (isLoading) return <div className="p-10 text-center font-semibold">Loading Analytics...</div>;
+  if (isLoading) return <Loading/>;
 
   return (
     <div className="p-6 bg-slate-50 min-h-screen">

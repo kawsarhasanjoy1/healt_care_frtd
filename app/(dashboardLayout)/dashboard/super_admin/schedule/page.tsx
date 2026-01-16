@@ -7,26 +7,35 @@ import ReusibleTable from "@/app/component/Reusible/Table/ReusibleTable";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { useDeleteScheduleMutation, useGetScheduleQuery } from "@/app/redux/api/scheduleApi";
+import { FiEdit2, FiTrash2, FiPlus } from "react-icons/fi"; // Added FiPlus
+import {
+  useDeleteScheduleMutation,
+  useGetScheduleQuery,
+} from "@/app/redux/api/scheduleApi";
 
+/**
+ * Formats date for display in the Admin Table.
+ * Uses 'en-GB' for a clean "15 Jan 2026, 08:30" format.
+ */
 const formatDateTime = (value: any) => {
   if (!value) return "—";
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "short",
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "—";
+
+  return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
+    month: "short",
+    year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: true,
   }).format(d);
 };
 
 const minutesBetween = (start: any, end: any) => {
-  const s = start instanceof Date ? start : new Date(start);
-  const e = end instanceof Date ? end : new Date(end);
-  if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) return null;
+  const s = new Date(start);
+  const e = new Date(end);
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return null;
   return Math.max(0, Math.round((e.getTime() - s.getTime()) / 60000));
 };
 
@@ -49,11 +58,13 @@ const SchedulePage = () => {
   const sortingValue = `${filters.sortBy}:${filters.sortOrder}`;
 
   const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this schedule?"))
+      return;
     try {
       const res = await deleteSchedule(id).unwrap();
-      toast.success(res?.message || "Deleted successfully");
+      toast.success(res?.message || "Schedule deleted successfully");
     } catch (err: any) {
-      toast.error(err?.data?.message || "Delete failed");
+      toast.error(err?.data?.message || "Failed to delete schedule");
     }
   };
 
@@ -61,18 +72,18 @@ const SchedulePage = () => {
     () => [
       {
         key: "startDateTime",
-        header: "Start",
+        header: "Start Time",
         render: (row: any) => (
-          <span className="font-semibold text-slate-900">
+          <span className="font-medium text-slate-900">
             {formatDateTime(row.startDateTime)}
           </span>
         ),
       },
       {
         key: "endDateTime",
-        header: "End",
+        header: "End Time",
         render: (row: any) => (
-          <span className="text-slate-700">
+          <span className="text-slate-600">
             {formatDateTime(row.endDateTime)}
           </span>
         ),
@@ -82,11 +93,11 @@ const SchedulePage = () => {
         header: "Duration",
         render: (row: any) => {
           const mins = minutesBetween(row.startDateTime, row.endDateTime);
-          if (mins === null) return <span className="text-slate-500">—</span>;
+          if (mins === null) return <span className="text-slate-400">—</span>;
           const h = Math.floor(mins / 60);
           const m = mins % 60;
           return (
-            <span className="text-slate-700">
+            <span className="text-slate-600 font-mono text-xs">
               {h > 0 ? `${h}h ` : ""}
               {m}m
             </span>
@@ -95,59 +106,56 @@ const SchedulePage = () => {
       },
       {
         key: "doctorsCount",
-        header: "Total Doctors",
+        header: "Assigned Doctors",
         render: (row: any) => (
-          <span className="text-slate-700">
-            {Array.isArray(row.doctorSchedules)
-              ? row.doctorSchedules.length
-              : row?._count?.doctorSchedules ?? "0"}
-          </span>
+          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+            {row?._count?.doctorSchedules ?? row.doctorSchedules?.length ?? "0"}
+          </div>
         ),
       },
       {
         key: "appointment",
-        header: "Appointment",
+        header: "Status",
         render: (row: any) => (
           <span
             className={[
-              "inline-flex rounded-full px-2 py-1 text-xs font-semibold",
+              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border",
               row.isBooked
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
-                : "bg-emerald-50 text-emerald-700 border border-emerald-200",
+                ? "bg-amber-50 text-amber-700 border-amber-200"
+                : "bg-emerald-50 text-emerald-700 border-emerald-200",
             ].join(" ")}
           >
+            <span
+              className={[
+                "mr-1.5 h-1.5 w-1.5 rounded-full",
+                row.isBooked ? "bg-amber-400" : "bg-emerald-400",
+              ].join(" ")}
+            ></span>
             {row.isBooked ? "Booked" : "Available"}
           </span>
-        ),
-      },
-      {
-        key: "createdAt",
-        header: "Created",
-        render: (row: any) => (
-          <span className="text-slate-600">{formatDateTime(row.createdAt)}</span>
         ),
       },
       {
         key: "actions",
         header: "Actions",
         render: (row: any) => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link
               href={`/dashboard/schedules/${row.id}/edit`}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50"
+              className="text-indigo-600 hover:text-indigo-900 transition-colors"
+              title="Edit Schedule"
             >
               <FiEdit2 className="h-4 w-4" />
-              Edit
             </Link>
 
             <button
               type="button"
               disabled={isDeleting}
               onClick={() => handleDelete(row.id)}
-              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 disabled:opacity-60"
+              className="text-rose-600 hover:text-rose-900 disabled:opacity-50 transition-colors"
+              title="Delete Schedule"
             >
               <FiTrash2 className="h-4 w-4" />
-              Delete
             </button>
           </div>
         ),
@@ -157,28 +165,26 @@ const SchedulePage = () => {
   );
 
   const scheduleSortingOptions = [
-    { label: "Start (Earliest)", value: "startDateTime:asc" },
-    { label: "Start (Latest)", value: "startDateTime:desc" },
-    { label: "Created (Newest)", value: "createdAt:desc" },
-    { label: "Created (Oldest)", value: "createdAt:asc" },
+    { label: "Date (Earliest First)", value: "startDateTime:asc" },
+    { label: "Date (Latest First)", value: "startDateTime:desc" },
+    { label: "Recently Created", value: "createdAt:desc" },
+    { label: "Oldest Records", value: "createdAt:asc" },
   ];
 
   return (
-    <div className="p-6">
-      <div className="mb-4 flex justify-between">
-        <p className="mb-3 hidden text-lg font-semibold md:block">Schedules</p>
-
-        <div className="flex gap-3">
-          <div className="w-full max-w-md">
-            <ReusableSearchInput
-              value={filters.searchTerm}
-              onChange={(v) =>
-                setFilters((prev) => ({ ...prev, searchTerm: v, page: 1 }))
-              }
-            />
+    <div className="min-h-screen bg-slate-50/50 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-6 flex flex-wrap justify-between items-center gap-4 ">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              Schedule Management
+            </h1>
+            <p className="text-sm text-slate-500">
+              Create and manage doctor appointment slots.
+            </p>
           </div>
 
-          <div className="w-full max-w-[200px]">
+          <div className="w-full md:w-64">
             <ReusableSelect
               options={scheduleSortingOptions}
               value={sortingValue}
@@ -194,18 +200,26 @@ const SchedulePage = () => {
             />
           </div>
         </div>
-      </div>
 
-      <ReusibleTable column={columns} data={schedules} isLoading={isLoading} />
+        {/* Table Section */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <ReusibleTable
+            column={columns}
+            data={schedules}
+            isLoading={isLoading}
+          />
+        </div>
 
-      <div className="mt-10 flex justify-center">
-        <Pagination
-          page={meta?.page ?? filters.page}
-          limit={meta?.limit ?? filters.limit}
-          total={meta?.total ?? 0}
-          onPageChange={(p) => setFilters((prev) => ({ ...prev, page: p }))}
-          disabled={isLoading}
-        />
+        {/* Pagination Section */}
+        <div className="mt-8 flex items-center justify-center">
+          <Pagination
+            page={meta?.page ?? filters.page}
+            limit={meta?.limit ?? filters.limit}
+            total={meta?.total ?? 0}
+            onPageChange={(p) => setFilters((prev) => ({ ...prev, page: p }))}
+            disabled={isLoading}
+          />
+        </div>
       </div>
     </div>
   );

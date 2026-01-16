@@ -116,8 +116,6 @@ const DoctorDashboard = () => {
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* অ্যাপয়েন্টমেন্ট স্ট্যাটাস (Pie Chart) */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="mb-6 text-lg font-bold text-slate-800">
             Appointment Status Distribution

@@ -13,7 +13,7 @@ import { TagTypeList } from '../tagTypes';
 
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'http://localhost:4000/api/v1/',
+  baseUrl: 'https://healthcareserver-two.vercel.app/api/v1/',
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -32,7 +32,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   DefinitionType
 > = async (args, api, extraOptions): Promise<any> => {
   let result = await baseQuery(args, api, extraOptions) as any;
-  console.log(result)
   if (result?.error?.status === 404) {
     toast.error(result.error.data.message);
   }
@@ -40,9 +39,8 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     toast.error(result.error.data.message);
   }
   if (result?.error?.status === 401) {
-    console.log('Sending refresh token');
-
-    const res = await fetch('http://localhost:4000/api/v1/auth/refresh-token', {
+  
+    const res = await fetch('https://healthcareserver-two.vercel.app/api/v1/auth/refresh-token', {
       method: 'POST',
       credentials: 'include',
     });
@@ -50,7 +48,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     const data = await res.json();
 
     if (data?.data?.accessToken) {
-      const user = (api.getState() as RootState).auth.user;
+      const user = (api.getState() as RootState).auth.user as any;
 
       api.dispatch(
         setUser({

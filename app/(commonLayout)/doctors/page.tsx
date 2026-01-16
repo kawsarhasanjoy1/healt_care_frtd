@@ -1,19 +1,23 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import DoctorsListCard from "@/app/component/doctors/DoctorsListCard";
 import FiltersModel from "@/app/component/Shared/FiltersModel";
 import { useGetDoctorsQuery } from "@/app/redux/api/doctorsApi";
 import { TDoctors } from "@/app/types/global";
 import { BsFilterLeft } from "react-icons/bs";
-import {  LuSearch } from "react-icons/lu";
+import { LuSearch, LuUserRound } from "react-icons/lu";
 import VoiceSearch from "@/app/component/doctors/Search/VoiceSearch";
 import Loading from "@/app/loading/page";
+import NotFoundPage from "@/app/component/NotFoundPage/NotFound";
 
 const DoctorsPage = () => {
+  const searchParams = useSearchParams();
+  const specialtyTitle = searchParams.get("title");
   const [filters, setFilters] = useState({
     searchTerm: "",
-    email: "",
-    contactNumber: "",
+    title: specialtyTitle ?? "",
     appoinmentFee: 0,
   });
   const [gender, setGender] = useState("");
@@ -21,7 +25,13 @@ const DoctorsPage = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const { data, isLoading } = useGetDoctorsQuery({
+  useEffect(() => {
+    if (specialtyTitle) {
+      setFilters((prev) => ({ ...prev, title: specialtyTitle }));
+    }
+  }, [specialtyTitle]);
+
+  const { data, isLoading, isFetching } = useGetDoctorsQuery({
     ...filters,
     gender,
     sortBy,
@@ -29,86 +39,109 @@ const DoctorsPage = () => {
   });
 
   const doctors: TDoctors[] = data?.data?.data || [];
+  console.log(doctors)
+  if (isLoading) return <Loading />;
 
   return (
-    <div className="w-full mx-auto px-4 py-8">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold text-slate-800">
-          Available Doctors
-        </h2>
-        <select
-          value={`${sortBy}_${sortOrder}`}
-          onChange={(e) => {
-            const [by, order] = e.target.value.split("_");
-            setSortBy(by);
-            setSortOrder(order as "asc" | "desc");
-          }}
-          className="border border-slate-200 focus:ring-2 focus:ring-indigo-500 rounded-lg px-4 py-2 bg-white shadow-sm"
-        >
-          <option value="createdAt_desc">Newest Doctors</option>
-          <option value="createdAt_asc">Oldest Doctors</option>
-          <option value="averageRating_desc">Top Rated</option>
-          <option value="experience_desc">Most Experienced</option>
-          <option value="appoinmentFee_asc">Fee: Low to High</option>
-          <option value="appoinmentFee_desc">Fee: High to Low</option>
-        </select>
+    <div className="container mx-auto px-4 py-10 min-h-screen">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h2 className="text-3xl font-[900] text-slate-900 tracking-tight">
+            {specialtyTitle
+              ? `${specialtyTitle} বিশেষজ্ঞগণ`
+              : "উপলব্ধ ডাক্তারবৃন্দ"}
+          </h2>
+          <p className="text-slate-500 font-medium mt-1">
+            আপনার প্রয়োজনে সেরা বিশেষজ্ঞ খুঁজে নিন
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <select
+            value={`${sortBy}_${sortOrder}`}
+            onChange={(e) => {
+              const [by, order] = e.target.value.split("_");
+              setSortBy(by);
+              setSortOrder(order as "asc" | "desc");
+            }}
+            className="w-full md:w-auto border border-slate-200 focus:ring-2 focus:ring-blue-500 rounded-xl px-4 py-3 bg-white shadow-sm font-bold text-slate-700 outline-none"
+          >
+            <option value="createdAt_desc">নতুন ডাক্তার</option>
+            <option value="averageRating_desc">টপ রেটেড</option>
+            <option value="experience_desc">অভিজ্ঞতা অনুযায়ী</option>
+            <option value="appoinmentFee_asc">ফি: কম থেকে বেশি</option>
+            <option value="appoinmentFee_desc">ফি: বেশি থেকে কম</option>
+          </select>
+        </div>
       </div>
 
-      {/* Filters + Search Section */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-10">
-        <div className="relative w-full">
+      <div className="relative flex flex-col md:flex-row items-center gap-4 mb-12">
+        <div className="relative flex-1 w-full">
           <LuSearch
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            size={20}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+            size={22}
           />
           <input
-            value={filters?.searchTerm}
+            value={filters.searchTerm}
             onChange={(e) =>
               setFilters((prev) => ({ ...prev, searchTerm: e.target.value }))
             }
-            type="search"
-            placeholder="Search doctors by name or specialty..."
-            className="border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full py-3 pl-10 pr-12 rounded-xl shadow-sm transition-all"
+            type="text"
+            placeholder="নাম বা বিশেষজ্ঞ দিয়ে সার্চ করুন..."
+            className="w-full py-4 pl-12 pr-12 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-blue-50 transition-all outline-none shadow-sm text-lg"
           />
-
+          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+            <VoiceSearch setFilters={setFilters} />
+          </div>
         </div>
-      <div>
-        <VoiceSearch setFilters={setFilters}/>
-      </div>
-        <div className="flex items-center gap-3">
+
+        <div className="relative w-full md:w-auto">
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className={`border px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-all ${
-              isFilterOpen
-                ? "bg-indigo-600 text-white border-indigo-600"
-                : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200"
+            className={`w-full md:w-auto px-8 py-4 rounded-2xl flex items-center justify-center gap-3 font-bold transition-all border-2 ${
+              isFilterOpen || gender || filters.appoinmentFee > 0
+                ? "bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-100"
+                : "bg-white text-slate-700 border-slate-100 hover:border-blue-200"
             }`}
           >
-            <BsFilterLeft size={20} />
-            <span>Filters</span>
+            <BsFilterLeft size={24} />
+            ফিল্টার {(gender || filters.appoinmentFee > 0) && "●"}
           </button>
 
+  
           {isFilterOpen && (
-            <div className="md:absolute top-48 md:top-auto mt-10 z-50 right-[25%]">
-              <FiltersModel
-                setValue={setGender}
-                setFilters={setFilters}
-                setIsFilterOpen={setIsFilterOpen}
+            <div className="absolute top-full right-0 mt-4 z-[100] w-full md:w-[350px]">
+              <div
+                className="fixed inset-0 bg-slate-900/10 backdrop-blur-[2px] md:hidden"
+                onClick={() => setIsFilterOpen(false)}
               />
+              <div className="relative">
+                <FiltersModel
+                  setValue={setGender}
+                  setFilters={setFilters}
+                  setIsFilterOpen={setIsFilterOpen}
+                />
+              </div>
             </div>
           )}
         </div>
       </div>
-
-     
-
-      {/* Doctors List */}
-      {isLoading ? (
-       <Loading/>
-      ) : (
-        <DoctorsListCard doctors={doctors} />
-      )}
+      <div
+        className={`${
+          isFetching ? "opacity-50" : "opacity-100"
+        } transition-opacity`}
+      >
+        {doctors.length > 0 ? (
+          <DoctorsListCard doctors={doctors} />
+        ) : (
+          <div className="py-10">
+            <NotFoundPage
+              title="দুঃখিত, কোনো ডাক্তার পাওয়া যায়নি!"
+              description="আপনার সার্চ বা ফিল্টার পরিবর্তন করে পুনরায় চেষ্টা করুন।"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

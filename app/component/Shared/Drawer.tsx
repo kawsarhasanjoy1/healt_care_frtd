@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { removeUser } from "@/app/services/auth.services";
 import Cookies from "js-cookie";
 import { authKey } from "@/app/constance/authKey";
+import { useGetMeQuery } from "@/app/redux/api/userApi";
 
 const Drawer = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,12 +16,14 @@ const Drawer = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const handleToLogout = async () => {
     dispatch(logOut());
-    Cookies.remove(authKey)
-    removeUser()
+    Cookies.remove(authKey);
+    removeUser();
     router.replace("/login");
   };
   const { user } = useAppSelector((store) => store.auth);
-  const role = user?.role?.toLowerCase()
+  const role = user?.role?.toLowerCase();
+  const { data } = useGetMeQuery(undefined);
+  const users = data?.data;
   return (
     <div className="min-h-screen bg-slate-50">
       {sidebarOpen && (
@@ -39,13 +42,14 @@ const Drawer = ({ children }: { children: React.ReactNode }) => {
       >
         <Sidebar
           role={role as any}
+          users={users as any}
           onNavigate={() => setSidebarOpen(false)}
         />
       </div>
 
       <div className="flex min-h-screen">
         <div className="hidden lg:block">
-          <Sidebar role={role as any} />
+          <Sidebar  role={role as any} users={users as any} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar

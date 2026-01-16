@@ -42,7 +42,7 @@ const cn = (...c: Array<string | false | undefined | null>) =>
         <Icon className="h-5 w-5" />
       </span>
 
-      <span className="flex-1 truncate font-medium">{title}</span>
+      <span className="flex-1  text-start truncate font-medium">{title}</span>
       {right}
     </div>
   );

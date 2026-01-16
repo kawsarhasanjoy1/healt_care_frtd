@@ -3,11 +3,17 @@
 import { useState } from "react";
 import Image from "next/image";
 import dayjs from "dayjs";
-import { FiCalendar, FiClock, FiVideo, FiFileText } from "react-icons/fi";
+import {
+  FiCalendar,
+  FiClock,
+  FiVideo,
+  FiFileText,
+  FiMessageSquare,
+} from "react-icons/fi";
 import ReusibleTable from "@/app/component/Reusible/Table/ReusibleTable";
 import Pagination from "@/app/component/Reusible/Pagination/Pagination";
 import { useGetMyAppoinmentQuery } from "@/app/redux/api/appointmentApi";
-import { MdReviews } from "react-icons/md";
+import { MdReviews, MdOutlineRateReview } from "react-icons/md";
 import ReusableModal from "@/app/component/Reusible/Model/ReusibleModel";
 import HCForm from "@/app/component/Form/HCForm/HCForm";
 import HCInput from "@/app/component/Form/HCInput/HCIput";
@@ -19,57 +25,63 @@ import Link from "next/link";
 
 const PatientAppointments = () => {
   const [open, setOpen] = useState(false);
-  const [appoinmentData, setAppoinmentData] = useState() as any;
+  const [appoinmentData, setAppoinmentData] = useState<any>(null);
   const [params, setParams] = useState({
     page: 1,
     limit: 10,
   });
 
   const { data, isLoading } = useGetMyAppoinmentQuery({ ...params });
-  const [createReview] = useCreateReviewMutation();
+  const [createReview, { isLoading: isReviewSubmitting }] =
+    useCreateReviewMutation();
 
   const handleToReview = async (e: FieldValues) => {
     const reviewData = {
       ...e,
+      rating: Number(e.rating), // নিশ্চিত করুন রেটিং নাম্বার হিসেবে যাচ্ছে
       appointmentId: appoinmentData?.id,
     };
     try {
       const res = await createReview(reviewData).unwrap();
-      if (res?.success) {
-        toast.success(res?.message);
+      if (res?.success || res?.id) {
+        toast.success("রিভিউ সফলভাবে জমা দেওয়া হয়েছে!");
         setOpen(false);
       }
     } catch (err: any) {
-      toast.error(err?.data?.message);
-      setOpen(false);
+      toast.error(err?.data?.message || "রিভিউ জমা দিতে ব্যর্থ হয়েছে");
     }
   };
 
   const handleToModal = (e: any) => {
     setAppoinmentData(e);
-    setOpen(!open);
+    setOpen(true);
   };
 
-  const appointments = data?.data?.data ?? [];
-  const meta = data?.data?.meta;
+  const appointments = data?.data?.data || []; // API স্ট্রাকচার অনুযায়ী চেঞ্জ হতে পারে
+  const meta = data?.meta;
 
   const column = [
     {
       key: "doctor",
-      header: "Doctor",
+      header: "Doctor Info",
       render: (row: any) => (
         <div className="flex items-center gap-3">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+          <div className="relative h-12 w-12 overflow-hidden rounded-2xl border-2 border-white shadow-sm ring-1 ring-slate-100">
             <Image
-              src={row?.doctor?.profilePhoto || "/placeholder-avatar.png"}
+              src={
+                row?.doctor?.profilePhoto ||
+                "https://i.ibb.co.com/896677G/placeholder-avatar.png"
+              }
               alt={row?.doctor?.name}
               fill
               className="object-cover"
             />
           </div>
           <div>
-            <div className="font-bold text-slate-900">{row?.doctor?.name}</div>
-            <div className="text-xs text-slate-500">
+            <div className="font-bold text-slate-800 leading-tight">
+              {row?.doctor?.name}
+            </div>
+            <div className="text-[11px] font-medium text-blue-600 uppercase tracking-wider">
               {row?.doctor?.designation}
             </div>
           </div>
@@ -78,15 +90,15 @@ const PatientAppointments = () => {
     },
     {
       key: "appointmentDate",
-      header: "Schedule",
+      header: "Schedule Details",
       render: (row: any) => (
-        <div className="text-sm">
-          <div className="flex items-center gap-1 font-medium text-slate-700">
-            <FiCalendar className="text-indigo-500" />
-            {dayjs(row?.schedule?.startDateTime).format("MMM D, YYYY")}
+        <div className="space-y-1">
+          <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-700">
+            <FiCalendar className="text-indigo-500" size={14} />
+            {dayjs(row?.schedule?.startDateTime).format("MMM DD, YYYY")}
           </div>
-          <div className="flex items-center gap-1 text-xs text-slate-500">
-            <FiClock className="text-indigo-400" />
+          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+            <FiClock className="text-slate-400" size={13} />
             {dayjs(row?.schedule?.startDateTime).format("hh:mm A")} -{" "}
             {dayjs(row?.schedule?.endDateTime).format("hh:mm A")}
           </div>
@@ -94,32 +106,48 @@ const PatientAppointments = () => {
       ),
     },
     {
-      key: "paymentStatus",
-      header: "Payment",
-      render: (row: any) => (
-        <span
-          className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase ${
-            row.paymentStatus === "PAID"
-              ? "bg-green-100 text-green-700"
-              : "bg-orange-100 text-orange-700"
-          }`}
-        >
-          {row.paymentStatus}
-        </span>
-      ),
+      key: "status",
+      header: "Booking Status",
+      render: (row: any) => {
+        const statusColors: any = {
+          SCHEDULED: "bg-blue-50 text-blue-600 border-blue-100",
+          COMPLETED: "bg-emerald-50 text-emerald-600 border-emerald-100",
+          CANCELED: "bg-red-50 text-red-600 border-red-100",
+        };
+        return (
+          <span
+            className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
+              statusColors[row.status] || "bg-slate-50 text-slate-600"
+            }`}
+          >
+            {row.status}
+          </span>
+        );
+      },
     },
     {
-      key: "status",
-      header: "Appt. Status",
+      key: "payment",
+      header: "Payment",
       render: (row: any) => (
-        <span className="text-xs font-semibold text-slate-600">
-          {row.status}
-        </span>
+        <div className="flex flex-col gap-1">
+          <span
+            className={`w-fit rounded-md px-2 py-0.5 text-[10px] font-black ${
+              row.paymentStatus === "PAID"
+                ? "bg-green-500 text-white"
+                : "bg-amber-400 text-white"
+            }`}
+          >
+            {row.paymentStatus}
+          </span>
+          <span className="text-[10px] text-slate-400 font-medium">
+            Txn: {row?.payment?.transactionId || "N/A"}
+          </span>
+        </div>
       ),
     },
     {
       key: "actions",
-      header: "Join / Action",
+      header: "Consultation",
       render: (row: any) => (
         <div className="flex items-center gap-2">
           {row.paymentStatus === "PAID" && row.status === "SCHEDULED" ? (
@@ -130,76 +158,91 @@ const PatientAppointments = () => {
                   "_blank"
                 )
               }
-              className="flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white hover:bg-indigo-700 transition-colors cursor-pointer"
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all"
             >
-              <FiVideo /> Join Call
+              <FiVideo size={16} /> Join Now
             </button>
-          ) : (
-            <button
-              disabled
-              className="cursor-not-allowed rounded-lg bg-slate-100 px-3 py-2 text-xs font-bold text-slate-400"
+          ) : row.status === "COMPLETED" ? (
+            <Link
+              href={`/dashboard/patient/prescription/${row.id}`}
+              className="flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-xs font-bold text-white hover:bg-slate-900 transition-all"
             >
-              Join Call
-            </button>
-          )}
-
-          {row.status === "COMPLETED" && (
-            <Link href={`/dashboard/patiant/prescription`} className="flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50">
-              <FiFileText /> Prescription
+              <FiFileText size={16} /> Report
             </Link>
+          ) : (
+            <span className="text-[11px] font-bold text-slate-300">
+              Wait for Schedule
+            </span>
           )}
         </div>
       ),
     },
     {
       key: "review",
-      header: "Review",
+      header: "Feedback",
       render: (row: any) => {
-        const isReviewDisabled =
-          row?.status !== "COMPLETED" ||
-          row?.paymentStatus !== "PAID" ||
-          !!row?.review;
+        const hasReviewed = !!row?.review;
+        const isEligible =
+          row?.status === "COMPLETED" && row?.paymentStatus === "PAID";
+
         return (
-          <div className="flex items-center gap-2">
-            <button
-              disabled={isReviewDisabled}
-              onClick={() => handleToModal(row)}
-              className={`flex items-center gap-1 rounded-lg ${
-                isReviewDisabled
-                  ? "bg-indigo-600 opacity-30"
-                  : "bg-indigo-500 cursor-pointer"
-              } px-3 py-2 text-xs font-bold text-white hover:bg-indigo-700 transition-colors `}
-            >
-              <MdReviews /> Give Review
-            </button>
-          </div>
+          <button
+            disabled={!isEligible || hasReviewed}
+            onClick={() => handleToModal(row)}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+              hasReviewed
+                ? "bg-slate-50 text-slate-400 cursor-not-allowed"
+                : isEligible
+                ? "bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-500 hover:text-white"
+                : "bg-slate-50 text-slate-200 cursor-not-allowed"
+            }`}
+          >
+            {hasReviewed ? (
+              <MdReviews size={16} />
+            ) : (
+              <MdOutlineRateReview size={16} />
+            )}
+            {hasReviewed ? "Reviewed" : "Review"}
+          </button>
         );
       },
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 p-6">
+    <div className="min-h-screen bg-[#F8FAFC] p-4 md:p-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-slate-900">
-            My Paid Appointments
-          </h1>
-          <p className="text-sm text-slate-500">
-            Manage your scheduled sessions and join video consultations.
-          </p>
-        </div>
+        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+              আমার অ্যাপয়েন্টমেন্ট
+            </h1>
+            <p className="text-slate-500 font-medium mt-1">
+              আপনার সকল অ্যাপয়েন্টমেন্ট এবং ভিডিও কনসাল্টেশন এখানে ম্যানেজ
+              করুন।
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <div className="bg-white px-4 py-2 rounded-2xl border border-slate-200 text-sm font-bold text-slate-600 shadow-sm">
+              Total: {meta?.total || 0}
+            </div>
+          </div>
+        </header>
 
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        {/* Table Container */}
+        <div className="rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/50 overflow-hidden">
           <ReusibleTable
             column={column}
             data={appointments}
             isLoading={isLoading}
           />
+
+        
         </div>
 
+        {/* Pagination */}
         {!isLoading && appointments.length > 0 && (
-          <div className="mt-6 flex justify-center">
+          <div className="mt-8 flex justify-center">
             <Pagination
               page={meta?.page || params.page}
               limit={meta?.limit || params.limit}
@@ -208,48 +251,44 @@ const PatientAppointments = () => {
             />
           </div>
         )}
-
-        {!isLoading && appointments.length === 0 && (
-          <div className="mt-10 text-center py-20 bg-white rounded-2xl border border-dashed border-slate-300">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-              <FiCalendar size={32} />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">
-              No appointments found
-            </h3>
-            <p className="text-slate-500 text-sm">
-              You haven't booked any appointments yet.
-            </p>
-          </div>
-        )}
       </div>
+
+      {/* Review Modal */}
       <ReusableModal
         open={open}
-        title="Give An Review"
+        title="ডাক্তারকে আপনার মতামত জানান"
         onClose={() => setOpen(false)}
       >
         <HCForm
           onsubmit={handleToReview}
-          defaultValues={{ rating: 0, comment: "" }}
+          defaultValues={{ rating: 5, comment: "" }}
         >
-          <div className="flex flex-col gap-4">
-            <div className="mx-auto">
-              <p className="text-sm font-medium mb-2 text-center">
-                Give Rating
+          <div className="space-y-6 py-4">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 p-4 bg-indigo-50 rounded-full text-indigo-600">
+                <FiMessageSquare size={32} />
+              </div>
+              <p className="text-sm font-bold text-slate-600">
+                আপনার অভিজ্ঞতার ভিত্তিতে রেটিং দিন
               </p>
-              <HCRating />
+              <div className="mt-2 scale-125">
+                <HCRating />
+              </div>
             </div>
+
             <HCInput
               name="comment"
               type="text"
-              placeholder="please enter your comment"
+              label="মন্তব্য লিখুন (ঐচ্ছিক)"
+              placeholder="আপনার অভিজ্ঞতা কেমন ছিল বলুন..."
             />
 
             <button
               type="submit"
-              className="h-10 rounded-lg bg-indigo-600 px-4 text-sm text-white"
+              disabled={isReviewSubmitting}
+              className="w-full h-14 rounded-2xl bg-indigo-600 text-lg font-bold text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-[0.98] transition-all disabled:opacity-50"
             >
-              SUBMIT REVIEW
+              {isReviewSubmitting ? "জমা হচ্ছে..." : "রিভিউ জমা দিন"}
             </button>
           </div>
         </HCForm>

@@ -24,7 +24,7 @@ const CreateSpecialtyPage = () => {
       title: data?.title,
       description: data?.description
     };
-  console.log(payload)
+
     const formData = new FormData();
     if (iconFile) formData.append("file", iconFile); 
     formData.append("data", JSON.stringify(payload));

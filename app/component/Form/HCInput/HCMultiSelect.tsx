@@ -1,70 +1,47 @@
 "use client";
-
-import Select, { components } from "react-select";
+import Select from "react-select";
 import { Controller, useFormContext } from "react-hook-form";
 
-export type Option = { label: string; value: string };
-
-type Props = {
-  name: string;
-  options: Option[];              
-  lockedOptions?: Option[];      
-  lockedIds?: string[];           
-  className?: string;
-  placeholder?: string;
-};
-
-const HCMultiSelect = ({
-  name,
-  options,
-  lockedOptions = [],
-  lockedIds = [],
-  className = "",
-  placeholder = "Select...",
-}: Props) => {
+const HCMultiSelect = ({ name, options, label, placeholder = "একাধিক নির্বাচন করুন..." }: any) => {
   const { control } = useFormContext();
 
+  const customStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      borderRadius: '12px',
+      minHeight: '44px',
+      borderColor: state.isFocused ? '#818cf8' : '#e2e8f0',
+      boxShadow: state.isFocused ? '0 0 0 4px #eef2ff' : 'none',
+      '&:hover': { borderColor: '#818cf8' }
+    }),
+    multiValue: (base: any) => ({
+      ...base,
+      backgroundColor: '#eef2ff',
+      borderRadius: '6px',
+      color: '#4f46e5',
+    }),
+    multiValueLabel: (base: any) => ({ ...base, color: '#4f46e5', fontWeight: '500' }),
+  };
+
   return (
-    <Controller
-      name={name}
-      control={control}
-      defaultValue={[]} 
-      render={({ field }) => {
-        const currentIds: string[] = Array.isArray(field.value) ? field.value : [];
-        const selectedFromAvailable = (options ?? []).filter((opt) =>
-          currentIds.includes(opt.value)
-        );
-
-        const valueToShow: Option[] = [
-          ...lockedOptions,
-          ...selectedFromAvailable.filter((o) => !lockedIds.includes(o.value)),
-        ];
-
-        return (
+    <div className="w-full space-y-1.5">
+      {label && <label className="text-sm font-medium text-slate-700">{label}</label>}
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
           <Select
-            className={className}
+            {...field}
             isMulti
-            closeMenuOnSelect={false}
-            isClearable={false}
+            options={options}
             placeholder={placeholder}
-            options={options ?? []}      
-            value={valueToShow}       
-            onChange={(selected) => {
-              const selectedIds = ((selected ?? []) as Option[]).map((s) => s.value);
-              const finalIds = Array.from(new Set([...lockedIds, ...selectedIds]));
-              field.onChange(finalIds);
-            }}
-            components={{
-              MultiValueRemove: (props) => {
-                const isLocked = lockedIds.includes((props.data as Option).value);
-                if (isLocked) return null;
-                return <components.MultiValueRemove {...props} />;
-              },
-            }}
+            styles={customStyles}
+            value={options.filter((obj: any) => field.value?.includes(obj.value))}
+            onChange={(val: any) => field.onChange(val.map((c: any) => c.value))}
           />
-        );
-      }}
-    />
+        )}
+      />
+    </div>
   );
 };
 

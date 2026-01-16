@@ -1,14 +1,15 @@
 "use client";
-
-import { useState } from "react";
 import { TDoctors } from "@/app/types/global";
 import Image from "next/image";
 import Link from "next/link";
 import { FcRating } from "react-icons/fc";
 import { MdVideoCall } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
+import { useAppSelector } from "@/app/redux/hooks";
 
 const DoctorsListCard = ({ doctors }: { doctors: TDoctors[] }) => {
+  const {user} = useAppSelector((state) => state.auth)
+  console.log(user)
   return (
     <div>
       <div className="bg-white py-10 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -62,16 +63,18 @@ const DoctorsListCard = ({ doctors }: { doctors: TDoctors[] }) => {
                 href={`/doctors/${doctor.id}`}
                 className="flex text-sm font-bold border border-blue-500 hover:bg-blue-600 items-center gap-2  text-white md:px-3 px-1 py-2 rounded-md bg-blue-500  transition"
               >
-               <CgProfile size={24} />
+                <CgProfile size={24} />
                 Doctor Profile
               </Link>
-              <Link
-                href={`/checkout/${doctor.id}`}
-                className="flex text-sm font-bold items-center gap-2 border border-blue-500 text-blue-500 md:px-3 px-1 py-2 rounded-md hover:bg-blue-600 hover:text-white transition"
-              >
-                <MdVideoCall size={24} />
-                See Doctor Now
-              </Link>
+              <button >
+                <Link
+                  href={`/checkout/${doctor.id}`}
+                  className="flex text-sm font-bold items-center gap-2 border border-blue-500 text-blue-500 md:px-3 px-1 py-2 rounded-md hover:bg-blue-600 hover:text-white transition"
+                >
+                  <MdVideoCall size={24} />
+                  See Doctor Now
+                </Link>
+              </button>
             </div>
           </div>
         ))}

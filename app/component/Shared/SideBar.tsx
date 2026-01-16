@@ -8,6 +8,10 @@ import type { IconType } from "react-icons";
 
 import SideBarItem, { type UserRole } from "@/app/utils/sidebar/sideBar";
 import MenuRow from "../ui/MenuRow/MenuRow";
+import { FaHome } from "react-icons/fa";
+import { BiSolidDonateBlood } from "react-icons/bi";
+import { MdOutlineHistory } from "react-icons/md";
+import { CiCircleInfo } from "react-icons/ci";
 
 type MenuItem = {
   title: string;
@@ -21,18 +25,30 @@ const cn = (...c: Array<string | false | undefined | null>) =>
 
 const Sidebar = ({
   role,
+  users,
   onNavigate,
 }: {
   role: UserRole;
+  users: any;
   onNavigate?: () => void;
 }) => {
-
   const pathname = usePathname();
-  const menu = useMemo(() => SideBarItem(role) as MenuItem[], [role]);
-  const [openTitle, setOpenTitle] = useState<string | null>(null);
 
-  const isActive = (href?: string) =>
-    !!href && (pathname === href || pathname.startsWith(href + "/"));
+  const menu = useMemo(
+    () => SideBarItem(role, users) as MenuItem[],
+    [role, users]
+  );
+
+  const [openTitle, setOpenTitle] = useState<string | null>(null);
+  const checkActive = (path?: string) => {
+    if (!path) return false;
+
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+    const targetPath = cleanPath.startsWith("dashboard")
+      ? `/${cleanPath}`
+      : `/dashboard/${cleanPath}`;
+    return pathname === targetPath || pathname === `${targetPath}/`;
+  };
 
   return (
     <aside className="h-screen w-[290px] border-r border-slate-200/70 bg-gradient-to-b from-white via-white to-slate-50">
@@ -41,7 +57,6 @@ const Sidebar = ({
           <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white shadow-sm">
             <span className="text-lg font-semibold">T</span>
           </div>
-
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-slate-900">
               TailAdmin
@@ -52,115 +67,157 @@ const Sidebar = ({
       </div>
 
       <nav className="h-[calc(100vh-92px)] overflow-y-auto px-4 pb-6">
-        <div className="px-2 py-2 text-[11px] font-semibold tracking-wider text-slate-400">
-          MENU
+        <div className="px-2 py-2 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+          Main Menu
         </div>
 
         <ul className="space-y-1.5">
           {menu.map((item) => {
             const hasChildren = !!item.children?.length;
             const expanded = openTitle === item.title;
-
-            const groupActive =
-              isActive(item.path) ||
-              (item.children?.some((c) => isActive(c.path)) as any);
-
-            const onParentClick = () =>
-              setOpenTitle(expanded ? null : item.title);
+            
+            // চাইল্ড একটিভ কি না চেক
+            const isAnyChildActive = item.children?.some((c) =>
+              checkActive(c.path)
+            );
+            
+            // প্যারেন্ট শুধু তখনই একটিভ হবে যখন সরাসরি ওই পাথে থাকবে
+            const groupActive = checkActive(item.path);
 
             return (
               <li key={item.title}>
                 {hasChildren ? (
                   <button
                     type="button"
-                    onClick={onParentClick}
-                    className="w-full text-left"
-                    aria-expanded={expanded}
+                    onClick={() => setOpenTitle(expanded ? null : item.title)}
+                    className={cn(
+                      "w-full transition-colors",
+                      // যদি চাইল্ড একটিভ থাকে, প্যারেন্টের টেক্সট একটু ডার্ক হবে
+                      isAnyChildActive && "text-slate-900 font-medium" 
+                    )}
                   >
                     <MenuRow
                       title={item.title}
                       icon={item.icon}
-                      active={groupActive}
+                      active={groupActive as any}
                       right={
                         <FiChevronDown
                           className={cn(
-                            "h-4 w-4 transition",
-                            groupActive ? "text-white/80" : "text-slate-400",
-                            expanded && "rotate-180"
+                            "h-4 w-4 transition-transform duration-300 inline-block", 
+                            expanded ? "rotate-180" : "rotate-0",
+                            isAnyChildActive && "text-indigo-600"
                           )}
                         />
                       }
                     />
                   </button>
                 ) : (
-                  <Link href={`/dashboard/${item.path} `|| "#"} onClick={() => onNavigate?.()}>
+                  <Link className="" href={`/dashboard/${item.path}`} onClick={onNavigate}>
                     <MenuRow
                       title={item.title}
                       icon={item.icon}
-                      active={groupActive}
+                      active={checkActive(item.path)}
                     />
                   </Link>
                 )}
-                {hasChildren && (
-                  <div
-                    className={cn(
-                      "grid transition-[grid-template-rows,opacity] duration-200",
-                      expanded
-                        ? "grid-rows-[1fr] opacity-100"
-                        : "grid-rows-[0fr] opacity-0"
-                    )}
-                  >
-                    <div className="overflow-hidden">
-                      <ul className="mt-2 space-y-1 pl-12">
-                        {item.children!.map((child) => {
-                          const childActive = isActive(child.path);
 
-                          return (
-                            <li key={child.path || child.title}>
-                              <Link
-                                href={`/dashboard/${child.path}` || "#"}
-                                onClick={() => onNavigate?.()}
-                                className={cn(
-                                  "group flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition",
-                                  childActive
-                                    ? "bg-indigo-50 text-indigo-700"
-                                    : "text-slate-600 hover:bg-white hover:text-slate-900",
-                                  "border border-transparent hover:border-slate-200/60"
-                                )}
-                              >
-                                <child.icon
-                                  className={cn(
-                                    "h-4 w-4 transition",
-                                    childActive
-                                      ? "text-indigo-700"
-                                      : "text-slate-400 group-hover:text-indigo-600"
-                                  )}
-                                />
-                                <span className="truncate">{child.title}</span>
-                                <span
-                                  className={cn(
-                                    "ml-auto h-1.5 w-1.5 rounded-full transition",
-                                    childActive
-                                      ? "bg-indigo-600"
-                                      : "bg-slate-300 group-hover:bg-indigo-300"
-                                  )}
-                                />
-                              </Link>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
-                  </div>
+                {hasChildren && expanded && (
+                  <ul className="mt-1 space-y-0.5 pl-6 border-l ml-5 border-slate-100">
+                    {item.children?.map((child) => (
+                      <li key={child.path}>
+                        <Link
+                          href={`/dashboard/${child.path}`}
+                          onClick={onNavigate}
+                        >
+                          <MenuRow
+                            title={child.title}
+                            icon={child.icon}
+                            active={checkActive(child.path)}
+                          />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </li>
             );
           })}
         </ul>
+
+        <div className="my-4 border-t border-2 border-slate-100"></div>
+
+        <ul className="space-y-0.5">
+          <li className="mt-[10px]">
+            <Link href={"/"} onClick={onNavigate}>
+              <MenuRow title={"Home"} icon={FaHome} active={pathname === "/"} />
+            </Link>
+          </li>
+
+          {role === "patiant" && (
+            <div className="space-y-0.5  mt-2">
+              {users?.isDonor && (
+                <div className=" space-y-2">
+                  <div>
+                    <Link
+                      href={`/dashboard/${role}/incoming-blood-requests`}
+                      onClick={onNavigate}
+                    >
+                      <MenuRow
+                        title={"Incoming Requests"}
+                        icon={CiCircleInfo}
+                        active={checkActive(`${role}/incoming-blood-requests`)}
+                      />
+                    </Link>
+                  </div>
+                  <div>
+                    <Link
+                      href={`/dashboard/${role}/my-blood-donation`}
+                      onClick={onNavigate}
+                    >
+                      <MenuRow
+                        title={"My Blood Donation"}
+                        icon={BiSolidDonateBlood}
+                        active={checkActive(`${role}/my-blood-donation`)}
+                      />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {users?.isNeedBlood && (
+                <div className=" space-y-2">
+                  <div>
+                    <Link
+                      href={`/dashboard/${role}/available-donors`}
+                      onClick={onNavigate}
+                    >
+                      <MenuRow
+                        title={"Available Donors"}
+                        icon={BiSolidDonateBlood}
+                        active={checkActive(`${role}/available-donors`)}
+                      />
+                    </Link>
+                  </div>
+                  <div>
+                    <Link
+                      href={`/dashboard/${role}/my-sent-requests`}
+                      onClick={onNavigate}
+                    >
+                      <MenuRow
+                        title={"Request History"}
+                        icon={MdOutlineHistory}
+                        active={checkActive(`${role}/my-sent-requests`)}
+                      />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </ul>
       </nav>
     </aside>
   );
-}
+};
 
-export default Sidebar
-
+export default Sidebar;

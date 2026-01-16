@@ -15,7 +15,6 @@ const DoctorProfilePage = () => {
 
   const doctor: DoctorProfile =
     (data?.data?.doctor as DoctorProfile) ?? (data?.data as DoctorProfile);
-    console.log(doctor)
   const {data: specialtiesData} = useGetSpecialtiesQuery({limit: 50})
   const specialties = (specialtiesData?.data?.data)
   const [changePassword] = useChangePassMutation();

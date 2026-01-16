@@ -1,8 +1,13 @@
 "use client";
 
 import { useGetMeQuery } from "@/app/redux/api/userApi";
-import React, { useEffect, useId, useRef, useState } from "react";
-import { FiBell, FiLogOut, FiMenu, FiSearch } from "react-icons/fi";
+import { useEffect, useId, useRef, useState } from "react";
+import { FiBell, FiMenu, FiSearch } from "react-icons/fi";
+import HCButton from "../ui/Button/HCButton";
+import { useUpPatiantDonorStatusMutation } from "@/app/redux/api/patiantApi";
+import toast from "react-hot-toast";
+import ReusableModal from "../Reusible/Model/ReusibleModel";
+import BloodDonateForm from "@/app/(dashboardLayout)/dashboard/patiant/component/DonateForm";
 
 const getInitials = (name: string) => {
   const parts = name?.trim().split(/\s+/)?.filter(Boolean);
@@ -13,16 +18,15 @@ const getInitials = (name: string) => {
 
 const Topbar = ({
   onMenu,
-  // user,
   onLogout,
 }: {
   onMenu: () => void;
-  // user: any;
   onLogout: () => void;
 }) => {
-  const {data} = useGetMeQuery(undefined)
+  const { data } = useGetMeQuery(undefined);
   const user = data?.data;
   const [open, setOpen] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const menuId = useId();
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
@@ -46,7 +50,23 @@ const Topbar = ({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+  const [upDonorStatus, { isLoading }] = useUpPatiantDonorStatusMutation();
+  const handleToDonorStatus = async () => {
+    try {
+      const res = await upDonorStatus().unwrap();
+      console.log(res);
+      if (res?.success) {
+        toast.success("You are donor now");
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
 
+  const donateModal = () => {
+    setOpenModal(!openModal);
+  };
+  console.log(openModal);
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
       <div className="flex h-16 items-center gap-3 px-4 md:px-6">
@@ -67,17 +87,43 @@ const Topbar = ({
             />
           </div>
         </div>
-
         <div className="ml-auto flex items-center gap-2">
+          {user?.role === "PATIANT" &&
+            (user?.isDonor ? (
+              <HCButton onClick={donateModal} variant="danger">
+                Donate Now
+              </HCButton>
+            ) : (
+              <HCButton
+                isLoading={isLoading}
+                disabled={isLoading}
+                onClick={handleToDonorStatus}
+                variant="primary"
+              >
+                Become a donor
+              </HCButton>
+            ))}
           <button
             className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
             aria-label="Notifications"
           >
             <FiBell className="h-5 w-5" />
           </button>
-         <button>
-          Become a donor
-         </button>
+          {openModal ? (
+            <ReusableModal
+              open={openModal}
+              title="Complete Your Donor Profile"
+              onClose={() => setOpenModal(false)}
+              heightClassName="h-auto max-h-[90vh]" 
+            >
+              <BloodDonateForm
+                user={user}
+                onSuccess={() => setOpenModal(false)}
+              />
+            </ReusableModal>
+          ) : (
+            ""
+          )}
           <div className="relative" ref={wrapRef}>
             <button
               type="button"
@@ -118,16 +164,16 @@ const Topbar = ({
 
                 <div className=" px-3">
                   <button
-                  type="button"
-                  className="bg-blue-600 hover:bg-blue-700 px-5 py-1 text-white rounded-md"
-                  role="menuitem"
-                  onClick={async () => {
-                    setOpen(false);
-                    await onLogout();
-                  }}
-                >
-                  Logout
-                </button>
+                    type="button"
+                    className="bg-blue-600 hover:bg-blue-700 px-5 py-1 text-white rounded-md"
+                    role="menuitem"
+                    onClick={async () => {
+                      setOpen(false);
+                      await onLogout();
+                    }}
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             )}
