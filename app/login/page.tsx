@@ -27,7 +27,7 @@ const LoginPage = () => {
 
   const [togglePass, setTogglePass] = useState(false);
   const dispatch = useAppDispatch();
-  const [authLogin, { data, error }] = useLoginMutation();
+  const [authLogin, { data, error,isLoading }] = useLoginMutation();
   const handleToLogin = async (e: any) => {
     try {
       const res = await authLogin(e).unwrap();
@@ -114,10 +114,11 @@ const LoginPage = () => {
                 <Link className=" hover:underline font-bold text-sm" href={'/forgot-password'}>Forgot Password</Link>
               </div>
               <button
+              disabled={isLoading}
                 type="submit"
                 className="h-11 w-full rounded-md bg-teal-500 text-sm font-semibold text-white hover:bg-teal-600 active:bg-teal-700"
               >
-                Login
+                {isLoading ? "Submiting..." : "Login"}
               </button>
 
               <p className="pt-2 text-center text-xs text-slate-400">

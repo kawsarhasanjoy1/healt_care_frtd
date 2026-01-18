@@ -1,4 +1,4 @@
-import getDoctorsData from "@/app/hooks/doctors";
+import { getDoctorsData } from "@/app/hooks/doctors";
 import getPatiantData from "@/app/hooks/patiant";
 import Image from "next/image";
 import { FiClock, FiFileText, FiUserCheck, FiArrowRight } from "react-icons/fi";

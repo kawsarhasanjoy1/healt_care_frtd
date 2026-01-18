@@ -2,12 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FiUser,
-  FiMail,
-  FiPhone,
-  FiKey,
-} from "react-icons/fi";
+import { FiUser, FiMail, FiPhone, FiKey } from "react-icons/fi";
 import HCForm from "../component/Form/HCForm/HCForm";
 import HCInput from "../component/Form/HCInput/HCIput";
 import HCImageUploader from "../component/Form/HCInput/HCUpload";
@@ -15,43 +10,40 @@ import { useCreatePatientMutation } from "../redux/api/userApi";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-
-
 const defaultRegisterValue = {
   name: "",
   email: "",
   password: "",
   contactNumber: "",
-  profilePhoto: ""
+  profilePhoto: "",
 };
 
 const PatientRegisterPage = () => {
-  const router = useRouter()
-  const [createPatient,{data}] = useCreatePatientMutation()
-  const handleRegister = async(data: any) => {
+  const router = useRouter();
+  const [createPatient, { data, isLoading }] = useCreatePatientMutation();
+  const handleRegister = async (data: any) => {
     const userData = {
       password: data?.password,
       patient: {
         name: data?.name,
         email: data?.email,
-        contactNumber: data?.contactNumber
-      }
-    }
-    const image = data?.profilePhoto?.[0]
-    
-    const formData = new FormData()
-     formData.append('file', image)
-     formData.append('data', JSON.stringify(userData))
-     try{
-      const res = await createPatient(formData).unwrap()
+        contactNumber: data?.contactNumber,
+      },
+    };
+    const image = data?.profilePhoto?.[0];
+
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("data", JSON.stringify(userData));
+    try {
+      const res = await createPatient(formData).unwrap();
       if (res?.success) {
-        toast.success(res?.message)
-        router.push('/login')
+        toast.success(res?.message);
+        router.push("/login");
       }
-     }catch(err: any){
-      toast.error(err?.data?.message)
-     }
-   
+    } catch (err: any) {
+      toast.error(err?.data?.message);
+    }
   };
 
   return (
@@ -78,7 +70,6 @@ const PatientRegisterPage = () => {
           />
         </section>
 
-  
         <section className="flex items-center justify-center">
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_16px_40px_rgba(8,20,26,.08)] space-y-3">
             <div className="mb-4 flex items-center gap-3">
@@ -97,7 +88,10 @@ const PatientRegisterPage = () => {
             </p>
 
             {/* Form */}
-            <HCForm onsubmit={handleRegister} defaultValues={defaultRegisterValue}>
+            <HCForm
+              onsubmit={handleRegister}
+              defaultValues={defaultRegisterValue}
+            >
               <div className="relative">
                 <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <HCInput name="name" placeholder="Full Name" type="text" />
@@ -130,17 +124,15 @@ const PatientRegisterPage = () => {
                 />
               </div>
               <div className="">
-               
-                <HCImageUploader  name="profilePhoto"/>
+                <HCImageUploader name="profilePhoto" />
               </div>
-
-              
 
               <button
                 type="submit"
+                disabled={isLoading}
                 className="mt-2 h-11 w-full rounded-md bg-teal-500 text-sm font-semibold text-white hover:bg-teal-600 active:bg-teal-700"
               >
-                Register
+                {isLoading ? "Submiting" : "Register"}
               </button>
 
               <div className="flex gap-2 justify-center items-center pt-3 text-sm text-slate-500">

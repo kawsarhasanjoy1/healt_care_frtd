@@ -1,23 +1,21 @@
-"use client";
 import DetailsBottom from "@/app/component/doctors/DetailsPage/DetailsBottom";
 import DetailsHeaders from "@/app/component/doctors/DetailsPage/DetailsHeader";
-import Loading from "@/app/loading/page";
-import { useGetDoctorQuery } from "@/app/redux/api/doctorsApi";
-import { useParams } from "next/navigation";
+import { getDoctorData } from "@/app/hooks/doctors";
+import { notFound } from "next/navigation";
 
-const DoctorDetailsPage = () => {
-  const params = useParams();
-  const doctorId = params?.doctorId as string;
-  const { data, isFetching } = useGetDoctorQuery(doctorId);
-  const doctorData = data?.data;
-  if (isFetching) {
-    return <Loading />;
+const DoctorDetailsPage = async ({ params }: { params: Promise<{ doctorId: string }> }) => {
+  const { doctorId } = await params;
+  const res = await getDoctorData(doctorId);
+  const doctorData = res?.data;
+
+  if (!doctorData) {
+    return notFound();
   }
 
   return (
     <div className="bg-slate-50 min-h-screen pb-12">
-      <DetailsHeaders doctorData={doctorData} />
-      <DetailsBottom doctorData={doctorData} />
+       <DetailsHeaders doctorData={doctorData} />
+       <DetailsBottom doctorData={doctorData} />
     </div>
   );
 };

@@ -2,13 +2,13 @@ import Image from "next/image";
 import { AiOutlineCheck } from "react-icons/ai";
 import { FiArrowUpRight, FiPlay, FiUsers, FiActivity } from "react-icons/fi";
 import MiniCard from "./Component/Hero/MiniCard";
-import getDoctorsData from "@/app/hooks/doctors";
 import Link from "next/link";
+import { getDoctorsData } from "@/app/hooks/doctors";
 
 const Hero = async () => {
   const doctorsData = await getDoctorsData();
-  // const doctors = doctorsData?.data?.data;
-  const total = (doctorsData?.data?.meta?.total)
+  const doctors = doctorsData?.data?.data;
+  const total = doctorsData?.data?.meta?.total;
   return (
     <section className="mt-6 px-4 md:px-0">
       <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#1e293b] via-[#334155] to-[#1e293b] px-6 py-12 md:px-16 md:py-20">
@@ -38,7 +38,10 @@ const Hero = async () => {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-5">
-              <Link href={'/doctors'} className="group inline-flex items-center gap-3 rounded-2xl bg-blue-600 px-8 py-4 text-sm font-bold transition-all hover:bg-blue-700 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+              <Link
+                href={"/doctors"}
+                className="group inline-flex items-center gap-3 rounded-2xl bg-blue-600 px-8 py-4 text-sm font-bold transition-all hover:bg-blue-700 hover:shadow-[0_0_20px_rgba(37,99,235,0.4)]"
+              >
                 অ্যাপয়েন্টমেন্ট নিন
                 <FiArrowUpRight className="text-lg transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
               </Link>

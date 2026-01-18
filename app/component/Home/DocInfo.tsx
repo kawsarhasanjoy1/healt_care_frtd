@@ -1,4 +1,3 @@
-import getDoctorsData from "@/app/hooks/doctors";
 import getPatiantData from "@/app/hooks/patiant";
 import {
   FiVideo,
@@ -12,9 +11,11 @@ import {
 } from "react-icons/fi";
 import ServiceCard from "./Component/DocInfo/ServiceCard";
 import StatCard from "./Component/DocInfo/StatCard";
+import { getDoctorsData } from "@/app/hooks/doctors";
 
 const DocInfo = async () => {
-  const doctorsData = await getDoctorsData();
+  const doctorsData = await getDoctorsData
+  ();
   const patiantData = await getPatiantData();
   const doctorTotal = doctorsData?.data?.meta?.total;
   const patiantTotal = patiantData?.data?.meta?.total;
