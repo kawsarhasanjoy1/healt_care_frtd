@@ -1,7 +1,6 @@
 {
   "name": "front-end",
   "version": "0.1.0",
-  
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,6 +15,7 @@
     "agora-rn-uikit": "^5.0.2",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",
+    "framer-motion": "^12.26.2",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.562.0",
