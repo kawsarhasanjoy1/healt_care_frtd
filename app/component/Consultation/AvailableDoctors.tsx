@@ -1,10 +1,9 @@
 import { FaArrowRightLong } from "react-icons/fa6";
-import PopulerDoctorsSwiper from "./PopulerDoctorsSpecialtiesSwiper";
 import Link from "next/link";
 import DoctorsSwiperCard from "./DoctorsSwiperCard";
 
 const AvailableDoctors = async () => {
-  const res = await fetch("https://healthcareserver-two.vercel.app/api/v1/doctors", {
+  const res = await fetch("http://localhost:4000/api/v1/doctors", {
     next: { revalidate: 30 },
   });
 
@@ -12,17 +11,21 @@ const AvailableDoctors = async () => {
   const doctors = data?.data?.data || [];
 
   return (
-    <div>
-      <div className="flex justify-between items-center text-black">
-        <p className="text-2xl font-semibold">Available doctor now</p>
-       <Link href={'/doctors'}>
-        <button className="flex items-center gap-2 text-md font-medium hover:cursor-pointer hover:text-blue-500 duration-300">
-          View all <FaArrowRightLong />
-        </button>
-       </Link>
+    <div className="py-10">
+      <div className="flex justify-between items-center text-black mb-8">
+        {/* টাইটেল */}
+        <p className="text-2xl font-bold text-slate-800">এখন অনলাইন আছেন এমন ডাক্তার</p>
+        
+        {/* সবগুলো দেখুন বাটন - বানান ঠিক করা হয়েছে */}
+        <Link href={'/doctors'}>
+          <button className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-all duration-300 group">
+            সবগুলো দেখুন 
+            <FaArrowRightLong className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </Link>
       </div>
 
-      {/* Client Component */}
+      {/* ডক্টর কার্ড সোয়াইপার */}
       <DoctorsSwiperCard doctors={doctors}/>
     </div>
   );

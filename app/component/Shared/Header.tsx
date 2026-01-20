@@ -13,29 +13,34 @@ const Header = () => {
   const { user, token } = useAppSelector((store) => store.auth) as any;
   const role = user?.role?.toLowerCase();
 
+  // নেভিগেশন লিঙ্কগুলো বাংলায় রূপান্তর
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Consultation", href: "/consultation" },
-    { name: "Doctors", href: "/doctors" },
-    { name: "Health Plans", href: "/health-plans" },
-    { name: "Diagnostic", href: "/diagnostic" },
-    { name: "NGOs", href: "/ngos" },
-    { name: "Blog", href: "/blog" },
+    { name: "হোম", href: "/" },
+    { name: "পরামর্শ", href: "/consultation" },
+    { name: "ডাক্তারগণ", href: "/doctors" },
+    { name: "হেলথ প্ল্যান", href: "/health-plans" },
+    { name: "ডায়াগনস্টিক", href: "/diagnostic" },
+    { name: "এনজিও", href: "/ngos" },
+    { name: "ব্লগ", href: "/blog" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1420px] items-center justify-between px-4 py-4 md:px-8">
-        
-        <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+        {/* লোগো */}
+        <Link
+          href="/"
+          className="flex items-center gap-2 transition-transform hover:scale-105"
+        >
           <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 font-black text-white shadow-lg shadow-indigo-200">
             H
           </div>
           <div className="text-xl font-extrabold tracking-tight text-slate-900">
-            Health<span className="text-indigo-600">Care</span>
+            হেলথ<span className="text-indigo-600">কেয়ার</span>
           </div>
         </Link>
 
+        {/* ডেস্কটপ নেভিগেশন */}
         <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -53,23 +58,34 @@ const Header = () => {
               </Link>
             );
           })}
-          
+
           {user && token && (
             <Link
               href={`/dashboard/${role}`}
               className="ml-2 rounded-full border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors"
             >
-              Dashboard
+              ড্যাশবোর্ড
             </Link>
           )}
         </nav>
 
+        {/* অ্যাকশন বাটন */}
         <div className="flex items-center gap-4">
-          <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95">
-            Contact Us
-            <FiArrowUpRight className="text-lg" />
-          </button>
+          {user && token ? (
+            <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95">
+              যোগাযোগ করুন
+              <FiArrowUpRight className="text-lg" />
+            </button>
+          ) : (
+            <Link
+              href={"/login"}
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95"
+            >
+              লগইন করুন
+            </Link>
+          )}
 
+          {/* মোবাইল মেনু বাটন */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 lg:hidden"
@@ -79,6 +95,7 @@ const Header = () => {
         </div>
       </div>
 
+      {/* মোবাইল সাইডবার */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -108,14 +125,14 @@ const Header = () => {
                     <FiArrowUpRight className="opacity-0 transition-opacity group-hover:opacity-100" />
                   </Link>
                 ))}
-                
+
                 {user && token ? (
                   <Link
                     href={`/dashboard/${role}`}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between rounded-xl bg-indigo-600 p-4 text-base font-bold text-white"
                   >
-                    My Dashboard
+                    আমার ড্যাশবোর্ড
                   </Link>
                 ) : (
                   <Link
@@ -123,12 +140,12 @@ const Header = () => {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-center rounded-xl bg-slate-900 p-4 text-base font-bold text-white"
                   >
-                    Login / Register
+                    লগইন / রেজিস্ট্রেশন
                   </Link>
                 )}
-                
+
                 <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 p-4 font-bold text-slate-900 hover:bg-slate-50">
-                  Contact Support
+                  সাপোর্ট টিম
                 </button>
               </div>
             </motion.div>

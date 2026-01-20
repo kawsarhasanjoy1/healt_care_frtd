@@ -6,6 +6,7 @@ import { FcRating } from "react-icons/fc";
 import { MdVideoCall } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { useAppSelector } from "@/app/redux/hooks";
+import { doctorPhoto } from "@/app/constance/constance";
 
 const DoctorsListCard = ({ doctors }: { doctors: TDoctors[] }) => {
   const {user} = useAppSelector((state) => state.auth)
@@ -22,7 +23,7 @@ const DoctorsListCard = ({ doctors }: { doctors: TDoctors[] }) => {
             <div className="flex gap-4">
               <div className="relative h-[180px] w-[160px] shrink-0 overflow-hidden rounded-xl">
                 <Image
-                  src={doctor.profilePhoto || "/doctor-placeholder.png"}
+                  src={doctor.profilePhoto || doctorPhoto}
                   alt={doctor.name}
                   fill
                   className="object-cover"

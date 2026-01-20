@@ -1,3 +1,4 @@
+import BlogCard from "../component/Home/Blog/BlogCard";
 import DiagnosticHero from "../component/Home/Diognostic";
 import DocInfo from "../component/Home/DocInfo";
 import TopRatedDoctors from "../component/Home/Doctors/TopRatedDoctors";
@@ -17,6 +18,7 @@ export default function Home() {
       <DiagnosticHero />
       <PremiumMemberSection />
       <TopRatedDoctors />
+      <BlogCard/>
       <HospitalPartner />
     </div>
   );

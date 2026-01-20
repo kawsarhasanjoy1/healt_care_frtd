@@ -6,107 +6,117 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Image from "next/image";
 import Link from "next/link";
-import { HiArrowRight } from "react-icons/hi2";
 import { AiFillStar } from "react-icons/ai";
-import { BsPatchCheckFill } from "react-icons/bs";
+import { HiOutlineChevronRight } from "react-icons/hi";
 
 type Props = {
   doctors: any[];
 };
 
-const PopulerDoctorsSpecialtiesSwiper = ({ doctors }: Props) => {
+const PopularSpecialistsSwiper = ({ doctors }: Props) => {
   return (
-    <div className="bg-[#F8FAFC] py-12 px-2">
-      <Swiper
-        modules={[Navigation, Pagination, Autoplay]}
-        slidesPerView={3}
-        spaceBetween={30}
-        autoplay={{ delay: 5000 }}
-        pagination={{ clickable: true, dynamicBullets: true }}
-        breakpoints={{
-          0: { slidesPerView: 1 },
-          768: { slidesPerView: 2 },
-          1200: { slidesPerView: 3 },
-        }}
-        className="pb-16"
-      >
-        {doctors?.map((doctor) => (
-          <SwiperSlide key={doctor.id}>
-            <div className="group relative my-4 bg-white rounded-[2.5rem]   transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.08)] border border-slate-100">
-              <div className="flex gap-5">
-                <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-3xl bg-slate-100">
-                  <Image
-                    src={doctor?.profilePhoto || "https://i.pinimg.com/736x/41/2d/e5/412de548542a9d1cff0f2dfcdc21fdaf.jpg"}
-                    alt={doctor?.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-110 border border-gray-100 rounded-xl"
-                  />
-                  <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-bold text-orange-500 backdrop-blur-sm shadow-sm">
-                    <AiFillStar size={12} />
-                    {doctor?.averageRating ?? "5.0"}
+    <div>
+      <div className="max-w-[1400px] mx-auto">
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]}
+          slidesPerView={3}
+          spaceBetween={25}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          pagination={{ clickable: true, dynamicBullets: true }}
+          breakpoints={{
+            0: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1200: { slidesPerView: 3 },
+          }}
+          className="!pb-16"
+        >
+          {doctors?.map((doctor) => (
+            <SwiperSlide key={doctor.id}>
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:border-[#1a73e8] transition-all duration-300 flex flex-col min-h-[300px] w-full">
+                <div className="flex gap-5 mb-auto">
+                  <div className="relative h-28 w-24 shrink-0 overflow-hidden rounded-xl bg-slate-50 border border-slate-100">
+                    <Image
+                      src={
+                        doctor?.profilePhoto ||
+                        "https://i.pinimg.com/736x/41/2d/e5/412de548542a9d1cff0f2dfcdc21fdaf.jpg"
+                      }
+                      alt={doctor?.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                </div>
 
-                <div className="flex flex-col justify-center space-y-1">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-xl font-black text-slate-800 tracking-tight leading-tight">
+                  {/* Info Right */}
+                  <div className="flex flex-col flex-1 text-start">
+                    <h3 className="text-lg font-bold text-slate-900 leading-tight mb-1">
                       {doctor?.name}
                     </h3>
-                    <BsPatchCheckFill className="text-blue-500" size={16} />
+                    <p className="text-[11px] text-slate-500 font-medium mb-3 line-clamp-2 min-h-[32px]">
+                      {doctor?.qualification}
+                    </p>
+                    {/* Badge */}
+                    <span className="bg-[#1a73e8] text-white text-[10px] font-bold px-2.5 py-1 rounded-md w-fit shadow-sm">
+                      {doctor?.doctorSpecialties?.[0]?.specialties?.title ||
+                        "Specialist"}
+                    </span>
                   </div>
-                  <p className="text-sm font-bold text-blue-600/80">
-                    {doctor?.doctorSpecialties?.[0]?.specialties?.title || "বিশেষজ্ঞ"}
-                  </p>
-                  <p className="line-clamp-2 text-xs font-medium text-slate-500 leading-relaxed">
-                    {doctor?.qualification}
-                  </p>
                 </div>
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-4 rounded-2xl bg-slate-50 p-4">
-                <div className="text-center border-r border-slate-200">
-                  <p className="text-lg font-black text-slate-800">
-                    {doctor?.experience ?? 0}+ বছর
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">অভিজ্ঞতা</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-black text-blue-600">
-                    ৳{doctor?.appoinmentFee}
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">ফি (ভিজিট)</p>
-                </div>
-              </div>
 
-              <div className="mt-6">
-                <Link
-                  href={`/doctors/${doctor?.id}`}
-                  className="group/btn flex items-center justify-center gap-3 w-full rounded-2xl bg-slate-900 py-4 text-sm font-bold text-white transition-all hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-200"
-                >
-                  প্রোফাইল দেখুন
-                  <div className="bg-white/20 p-1 rounded-lg group-hover/btn:translate-x-2 transition-transform">
-                    <HiArrowRight size={18} />
+                {/* Rating & Exp Section */}
+                <div className="flex items-center gap-6 mt-6 pt-4 border-t border-slate-50">
+                  <div className="flex items-center gap-1">
+                    <AiFillStar className="text-orange-400" size={16} />
+                    <span className="text-xs font-bold text-slate-700">
+                      {doctor?.averageRating ?? "5"}
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      ({doctor?.reviews?.length || "0"})
+                    </span>
                   </div>
-                </Link>
+                  <div className="flex flex-col">
+                    <span className="text-[14px] font-bold text-slate-800">
+                      {doctor?.experience ?? 0}+ Years
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+                      Experience
+                    </span>
+                  </div>
+                </div>
+
+                {/* Fee & Action Section */}
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-bold text-[#1a73e8]">
+                      ৳ {doctor?.appoinmentFee}
+                    </span>
+                  </div>
+
+                  <Link
+                    href={`/checkout/${doctor?.id}`}
+                    className="text-[13px] font-bold text-[#1a73e8] hover:underline flex items-center gap-1 group"
+                  >
+                    ডাক্তার দেখান
+                    <HiOutlineChevronRight className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
-
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-
-      {/* কাস্টম বুলেটস কালার স্টাইল */}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
       <style jsx global>{`
+        .swiper-pagination-bullet {
+          background: #cbd5e1 !important;
+          opacity: 1 !important;
+        }
         .swiper-pagination-bullet-active {
-          background: #2563eb !important;
+          background: #1a73e8 !important;
           width: 25px !important;
           border-radius: 10px !important;
-        }
-        .swiper-pagination {
-          bottom: 0px !important;
         }
       `}</style>
     </div>
   );
 };
 
-export default PopulerDoctorsSpecialtiesSwiper;
+export default PopularSpecialistsSwiper;

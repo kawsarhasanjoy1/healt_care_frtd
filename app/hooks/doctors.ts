@@ -3,7 +3,7 @@
 export const getDoctorsData = async () => {
   try {
     const res = await fetch(
-      `https://healthcareserver-two.vercel.app/api/v1/doctors`,
+      `http://localhost:4000/api/v1/doctors`,
       {
         next: { revalidate: 30 },
       }
@@ -20,7 +20,7 @@ export const getDoctorsData = async () => {
 export const getDoctorData = async (id: string) => {
   try {
     const res = await fetch(
-      `https://healthcareserver-two.vercel.app/api/v1/doctors/${id}`,
+      `http://localhost:4000/api/v1/doctors/${id}`,
       {
         next: { revalidate: 30 },
       }

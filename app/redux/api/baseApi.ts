@@ -13,7 +13,7 @@ import { TagTypeList } from '../tagTypes';
 
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'https://healthcareserver-two.vercel.app/api/v1/',
+  baseUrl: 'http://localhost:4000/api/v1/',
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -39,7 +39,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
   }
   if (result?.error?.status === 401) {
   
-    const res = await fetch('https://healthcareserver-two.vercel.app/api/v1/auth/refresh-token', {
+    const res = await fetch('http://localhost:4000/api/v1/auth/refresh-token', {
       method: 'POST',
       credentials: 'include',
     });

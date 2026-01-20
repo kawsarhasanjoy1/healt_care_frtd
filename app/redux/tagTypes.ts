@@ -7,7 +7,8 @@ export enum tagTypes {
   doctorSchedule="doctor-schedules",
   review='review',
   prescription='prescription',
-  patients="patients"
+  patients="patients",
+  blogs='blogs'
 }
 
 export const TagTypeList = [
@@ -19,5 +20,6 @@ export const TagTypeList = [
   tagTypes.doctorSchedule,
   tagTypes.review,
   tagTypes.prescription,
-  tagTypes.patients
+  tagTypes.patients,
+  tagTypes.blogs
 ];

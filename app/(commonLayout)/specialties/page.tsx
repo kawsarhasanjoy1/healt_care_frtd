@@ -3,7 +3,7 @@ import { TSpecialties } from "@/app/types/global";
 
 
 const page = async() => {
-  const res = await fetch(`https://healthcareserver-two.vercel.app/api/v1/specialties?limit=${100}`, {
+  const res = await fetch(`http://localhost:4000/api/v1/specialties?limit=${100}`, {
     next: {revalidate: 20}
   })
   const data = await res.json()

@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FcRating } from "react-icons/fc";
 import { MdVideoCall } from "react-icons/md";
+import { doctorPhoto } from "@/app/constance/constance";
 
 type Props = {
   doctors: any[];
@@ -33,7 +34,7 @@ const DoctorsSwiperCard = ({ doctors }: Props) => {
               {/* Image */}
               <div className="relative w-[300px] h-[200px] rounded-lg overflow-hidden">
                 <Image
-                  src={doctor?.profilePhoto || "https://i.pinimg.com/736x/41/2d/e5/412de548542a9d1cff0f2dfcdc21fdaf.jpg"}
+                  src={doctor?.profilePhoto || doctorPhoto}
                   alt={doctor?.name || "Doctor"}
                   fill
                   className="object-cover"

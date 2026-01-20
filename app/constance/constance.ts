@@ -6,4 +6,4 @@
 } as const
 
 
-export const doctorPhoto = "https://png.pngtree.com/png-clipart/20231004/original/pngtree-doctor-cartoon-character-png-image_13117342.png"
+export const doctorPhoto = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYTEvLKZ9y6IxDx3_8tWPO7blcL5hV1I1VLw&s"

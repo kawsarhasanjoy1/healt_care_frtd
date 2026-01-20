@@ -15,7 +15,7 @@ import {
 } from "react-icons/md";
 
 export type UserRole = keyof typeof USER_ROLE;
-const SideBarItem = (role: UserRole,users: any) => {
+const SideBarItem = (role: UserRole, users: any) => {
   const roleMenu: Record<string, any>[] = [];
   switch (role) {
     case USER_ROLE.super_admin:
@@ -221,6 +221,22 @@ const SideBarItem = (role: UserRole,users: any) => {
           title: "Review",
           path: `/${role}/my-review`,
           icon: MdReviews,
+        },
+        {
+          title: "Blogs",
+          icon: FaBlogger,
+          children: [
+            {
+              title: "All Blogs",
+              path: `/${role}/blog`,
+              icon: FaBlogger,
+            },
+            {
+              title: "Create Blog",
+              path: `/${role}/blog/create-blog`,
+              icon: MdLibraryAdd,
+            },
+          ],
         },
         {
           title: "Profile",
