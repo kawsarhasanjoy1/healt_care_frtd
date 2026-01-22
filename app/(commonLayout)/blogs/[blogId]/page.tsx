@@ -4,7 +4,7 @@ import Loading from "@/app/loading/page";
 import { useGetSingleBlogQuery } from "@/app/redux/api/blogApi";
 import { useParams } from "next/navigation";
 
-const BlogDetailsPage =  () => {
+const BlogDetailsPage = () => {
   const params = useParams();
   const blogId = params?.blogId as string;
   const { data: blog, isLoading } = useGetSingleBlogQuery(blogId);

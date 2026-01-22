@@ -27,44 +27,46 @@ const HCQuill = ({ name, label }: { name: string; label?: string }) => {
     input.onchange = async () => {
       const file = input.files?.[0];
       if (file) {
-        // ১. Blob URL তৈরি (এডিটরে প্রিভিউ দেখানোর জন্য)
-        const blobUrl = URL.createObjectURL(file);
+        const reader = new FileReader();
 
-        const quill = quillRef.current.getEditor();
-        const range = quill.getSelection();
+        reader.onload = () => {
+          const base64Url = reader.result as string;
+          const quill = quillRef.current.getEditor();
+          const range = quill.getSelection();
+          quill.insertEmbed(range?.index || 0, "image", base64Url);
+          quill.setSelection((range?.index || 0) + 1);
 
-        // ২. এডিটরে সঠিক পজিশনে ইমেজ ইনসার্ট করা
-        quill.insertEmbed(range?.index || 0, "image", blobUrl);
+          const fullContent = quill.root.innerHTML;
+          onChange(fullContent);
+          const currentFiles = getValues("content_files") || [];
+          setValue("content_files", [...currentFiles, file]);
+        };
 
-        // ৩. গুরুত্বপূর্ণ: এডিটরের পুরো কন্টেন্ট নিয়ে ফর্মের মেইন ভ্যালু (onChange) আপডেট করা
-        // এটি না করলে কন্টেন্টের ভেতরে <img> ট্যাগ সেভ হবে না
-        const updatedContent = quill.root.innerHTML;
-        onChange(updatedContent);
-
-        // ৪. ফাইলটিকে আলাদা 'content_files' এরেতে জমা রাখা (ব্যাকএন্ডে পাঠানোর জন্য)
-        const existingFiles = getValues("content_files") || [];
-        setValue("content_files", [...existingFiles, file], {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
+        reader.readAsDataURL(file);
       }
     };
   };
 
-  const createModules = (onChange: (value: string) => void) => ({
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link", "image"],
-        ["clean"],
-      ],
-      handlers: {
-        image: () => imageHandler(onChange),
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, false] }],
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["link", "image"],
+          ["clean"],
+        ],
+        handlers: {
+          image: function () {
+            // @ts-ignore
+            imageHandler(this.quill.onChangeProxy);
+          },
+        },
       },
-    },
-  });
+    }),
+    []
+  );
 
   return (
     <div className="mb-20">
@@ -77,20 +79,23 @@ const HCQuill = ({ name, label }: { name: string; label?: string }) => {
         name={name}
         control={control}
         defaultValue=""
-        render={({ field }) => (
-          <ReactQuill
-            forwardedRef={quillRef}
-            theme="snow"
-            value={field.value}
-            onChange={field.onChange}
-            modules={useMemo(
-              () => createModules(field.onChange),
-              [field.onChange]
-            )}
-            className="h-[300px]"
-            placeholder="বিস্তারিত এখানে লিখুন..."
-          />
-        )}
+        render={({ field }) => {
+          if (quillRef.current) {
+            quillRef.current.getEditor().onChangeProxy = field.onChange;
+          }
+
+          return (
+            <ReactQuill
+              forwardedRef={quillRef}
+              theme="snow"
+              value={field.value}
+              onChange={field.onChange}
+              modules={modules}
+              className="h-[300px]"
+              placeholder="বিস্তারিত এখানে লিখুন..."
+            />
+          );
+        }}
       />
     </div>
   );

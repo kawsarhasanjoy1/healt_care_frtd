@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const FindSpecialties = async () => {
   const res = await fetch(
-    `http://localhost:4000/api/v1/specialties?limit=${12}&page=${1}`
+    `https://healthcareserver-two.vercel.app/api/v1/specialties?limit=${12}&page=${1}`
   );
   const data = await res.json();
   const specialties = data?.data?.data;

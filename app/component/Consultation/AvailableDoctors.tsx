@@ -3,7 +3,7 @@ import Link from "next/link";
 import DoctorsSwiperCard from "./DoctorsSwiperCard";
 
 const AvailableDoctors = async () => {
-  const res = await fetch("http://localhost:4000/api/v1/doctors", {
+  const res = await fetch("https://healthcareserver-two.vercel.app/api/v1/doctors", {
     next: { revalidate: 30 },
   });
 

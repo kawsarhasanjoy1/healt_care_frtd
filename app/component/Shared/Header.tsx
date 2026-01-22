@@ -13,7 +13,6 @@ const Header = () => {
   const { user, token } = useAppSelector((store) => store.auth) as any;
   const role = user?.role?.toLowerCase();
 
-  // নেভিগেশন লিঙ্কগুলো বাংলায় রূপান্তর
   const navLinks = [
     { name: "হোম", href: "/" },
     { name: "পরামর্শ", href: "/consultation" },
@@ -21,13 +20,12 @@ const Header = () => {
     { name: "হেলথ প্ল্যান", href: "/health-plans" },
     { name: "ডায়াগনস্টিক", href: "/diagnostic" },
     { name: "এনজিও", href: "/ngos" },
-    { name: "ব্লগ", href: "/blog" },
+    { name: "ব্লগ", href: "/blogs" },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1420px] items-center justify-between px-4 py-4 md:px-8">
-        {/* লোগো */}
         <Link
           href="/"
           className="flex items-center gap-2 transition-transform hover:scale-105"
@@ -40,7 +38,6 @@ const Header = () => {
           </div>
         </Link>
 
-        {/* ডেস্কটপ নেভিগেশন */}
         <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
@@ -69,7 +66,6 @@ const Header = () => {
           )}
         </nav>
 
-        {/* অ্যাকশন বাটন */}
         <div className="flex items-center gap-4">
           {user && token ? (
             <button className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-slate-800 hover:shadow-lg active:scale-95">
@@ -85,7 +81,6 @@ const Header = () => {
             </Link>
           )}
 
-          {/* মোবাইল মেনু বাটন */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-slate-50 text-slate-600 lg:hidden"
@@ -95,7 +90,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* মোবাইল সাইডবার */}
       <AnimatePresence>
         {isOpen && (
           <>

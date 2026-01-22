@@ -1,20 +1,12 @@
-"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, User, ChevronRight, Clock } from "lucide-react";
-import { useGetAllBlogsQuery } from "@/app/redux/api/blogApi";
+import { Calendar, ChevronRight, Clock } from "lucide-react";
 import calculateReadingTime from "@/app/utils/calculateReadingTime";
+import useBlog from "@/app/hooks/blog";
 
-const BlogCard = () => {
-  const { data: blogs, isLoading } = useGetAllBlogsQuery({});
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-
+const BlogCard = async () => {
+  const res = await useBlog();
+  const blogs = res?.data?.data;
   return (
     <div className="bg-[#f8fafc] py-24 px-4 min-h-screen font-sans">
       <div className="max-w-7xl mx-auto text-center mb-20">
@@ -28,7 +20,7 @@ const BlogCard = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
-        {blogs?.data?.map((blog: any) => (
+        {blogs?.map((blog: any) => (
           <article
             key={blog.id}
             className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 flex flex-col group"
@@ -59,7 +51,9 @@ const BlogCard = () => {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock size={14} className="text-blue-500" />
-                  <span>{calculateReadingTime(blog?.content)} মিনিট পড়ার সময়</span>
+                  <span>
+                    {calculateReadingTime(blog?.content)} মিনিট পড়ার সময়
+                  </span>
                 </div>
               </div>
 
