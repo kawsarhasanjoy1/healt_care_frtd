@@ -14,17 +14,18 @@ import StatCard from "./Component/DocInfo/StatCard";
 import { getDoctorsData } from "@/app/hooks/doctors";
 
 const DocInfo = async () => {
-  const doctorsData = await getDoctorsData
-  ();
+  const doctorsData = await getDoctorsData();
   const patiantData = await getPatiantData();
   const doctorTotal = doctorsData?.data?.meta?.total;
   const patiantTotal = patiantData?.data?.meta?.total;
 
   return (
-    <section className="py-16 space-y-16">
-      {/* সার্ভিস সেকশন */}
+    // কন্টেইনারে সর্বোচ্চ উইথ (max-w-7xl) এবং অটো মার্জিন যোগ করা হয়েছে
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 space-y-16">
+      
+      {/* সার্ভিস সেকশন - গ্রিড লেআউট অপ্টিমাইজেশন */}
       <div className="relative">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <ServiceCard
             title="সরাসরি ভিডিও পরামর্শ"
             desc="তাৎক্ষণিক ভিডিও পরামর্শ নিন অথবা আপনার সুবিধামতো অ্যাপয়েন্টমেন্ট বুক করুন"
@@ -52,62 +53,67 @@ const DocInfo = async () => {
         </div>
       </div>
 
-      {/* স্ট্যাটাস স্ট্রিপ - আধুনিক ও মিনিমালিস্ট ডিজাইন */}
-      <div className="relative mt-12 rounded-[32px] bg-white border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)] p-8 md:p-12">
-        <div className="relative z-10 grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-center">
+      {/* স্ট্যাটাস স্ট্রিপ - মোবাইল ফ্রেন্ডলি ফ্লেক্সিবল গ্রিড */}
+      <div className="relative overflow-hidden rounded-[24px] md:rounded-[40px] bg-white border border-slate-100 shadow-[0_15px_40px_rgba(0,0,0,0.04)] p-6 sm:p-10 lg:p-14">
+        
+        {/* ব্যাকগ্রাউন্ড গ্লো ইফেক্ট - পজিশনিং ঠিক করা হয়েছে */}
+        <div className="absolute -top-12 -right-12 h-48 w-48 bg-blue-100/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-12 -left-12 h-48 w-48 bg-purple-100/40 rounded-full blur-3xl" />
+
+        <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-10 gap-x-4 sm:gap-8 items-start">
           <StatCard
             icon={
-              <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
+              <div className="p-3 w-fit rounded-2xl bg-blue-50 text-blue-600 transition-transform hover:scale-110">
                 <FiUsers size={24} />
               </div>
             }
             value={doctorTotal || "২০০কে+"}
-            label="BMDC ভেরিফাইড অভিজ্ঞ ডাক্তার"
+            label="BMDC ভেরিফাইড ডাক্তার"
           />
 
           <StatCard
             icon={
-              <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+              <div className="p-3 w-fit rounded-2xl bg-emerald-50 text-emerald-600 transition-transform hover:scale-110">
                 <FiClock size={24} />
               </div>
             }
             value="১০ মিনিট"
-            label="গড় অপেক্ষার সময়"
+            label="গড় অপেক্ষার সময়"
           />
 
           <StatCard
             icon={
-              <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
+              <div className="p-3 w-fit rounded-2xl bg-purple-50 text-purple-600 transition-transform hover:scale-110">
                 <FiUsers size={24} />
               </div>
             }
             value={patiantTotal || "৭০০কে+"}
-            label="মানুষের আস্থা ও ভালোবাসা"
+            label="মানুষের আস্থা"
           />
 
           <StatCard
             icon={
-              <div className="p-3 rounded-2xl bg-amber-50 text-amber-600">
+              <div className="p-3 w-fit rounded-2xl bg-amber-50 text-amber-600 transition-transform hover:scale-110">
                 <FiStar size={24} />
               </div>
             }
             value="৯৫%"
-            label="ইউজারদের ৫-স্টার রেটিং"
+            label="৫-স্টার রেটিং"
           />
 
-          <StatCard
-            icon={
-              <div className="p-3 rounded-2xl bg-rose-50 text-rose-600">
-                <FiDownload size={24} />
-              </div>
-            }
-            value="১+ মিলিয়ন"
-            label="প্লে-স্টোর ডাউনলোড"
-          />
+          {/* মোবাইল স্ক্রিনে শেষ কার্ডটিকে মাঝখানে আনার জন্য কলাম স্প্যান ব্যবহার করা যেতে পারে */}
+          <div className="col-span-2 md:col-span-1 flex justify-center md:block">
+            <StatCard
+              icon={
+                <div className="p-3 w-fit rounded-2xl bg-rose-50 text-rose-600 transition-transform hover:scale-110">
+                  <FiDownload size={24} />
+                </div>
+              }
+              value="১+ মিলিয়ন"
+              label="অ্যাপ ডাউনলোড"
+            />
+          </div>
         </div>
-
-        {/* ডেকোরেটিভ এলিমেন্ট - হালকা গ্লো */}
-        <div className="absolute -top-10 -right-10 h-40 w-40 bg-blue-50 rounded-full blur-3xl opacity-50" />
       </div>
     </section>
   );
