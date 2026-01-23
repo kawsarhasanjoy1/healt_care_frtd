@@ -101,18 +101,7 @@ const DocInfo = async () => {
             label="৫-স্টার রেটিং"
           />
 
-          {/* মোবাইল স্ক্রিনে শেষ কার্ডটিকে মাঝখানে আনার জন্য কলাম স্প্যান ব্যবহার করা যেতে পারে */}
-          <div className="col-span-2 md:col-span-1 flex justify-center md:block">
-            <StatCard
-              icon={
-                <div className="p-3 w-fit rounded-2xl bg-rose-50 text-rose-600 transition-transform hover:scale-110">
-                  <FiDownload size={24} />
-                </div>
-              }
-              value="১+ মিলিয়ন"
-              label="অ্যাপ ডাউনলোড"
-            />
-          </div>
+         
         </div>
       </div>
     </section>
